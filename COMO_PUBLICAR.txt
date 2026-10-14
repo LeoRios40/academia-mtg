@@ -1,0 +1,27 @@
+ACADEMIA DO PLANESWALKER - COMO PUBLICAR NO GITHUB PAGES (gratuito)
+
+1. Crie uma conta em https://github.com (botão "Sign up"). Escolha bem o nome de usuário:
+   ele fará parte do endereço do site.
+
+2. Crie o repositório: botão "+" no canto superior direito -> "New repository".
+   - Repository name: academia-mtg (ou outro nome, sem espaços)
+   - Marque "Public"
+   - Clique em "Create repository".
+
+3. Envie os arquivos: na página do repositório, clique em "uploading an existing file"
+   (ou "Add file" -> "Upload files"). Arraste TODOS os arquivos desta pasta:
+   index.html, manifest.webmanifest, sw.js, icon-192.png, icon-512.png,
+   icon-maskable-512.png, apple-touch-icon.png
+   Depois clique em "Commit changes".
+
+4. Ative o site: "Settings" (engrenagem do repositório) -> "Pages" (menu da esquerda).
+   Em "Branch", escolha "main" e a pasta "/ (root)" -> "Save".
+
+5. Espere 1 a 2 minutos e atualize a página de Settings -> Pages.
+   Aparece o endereço, no formato:  https://SEU-USUARIO.github.io/academia-mtg/
+
+6. Abra esse endereço no Chrome do celular. Para instalar como aplicativo:
+   menu (três pontos) -> "Adicionar à tela inicial" / "Instalar app".
+
+PARA ATUALIZAR DEPOIS: repita o passo 3 enviando o novo index.html (o GitHub substitui
+o antigo). Em alguns minutos todos que usam o link recebem a versão nova.
