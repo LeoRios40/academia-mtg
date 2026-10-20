@@ -1,5 +1,5 @@
 // Academia do Planeswalker: funciona sem internet depois da primeira visita.
-const VERSAO = 'academia-v6';
+const VERSAO = 'academia-v7';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(VERSAO).then(c => c.addAll(ARQUIVOS))); self.skipWaiting(); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== VERSAO && k !== 'cartas').map(k => caches.delete(k))))); self.clients.claim(); });

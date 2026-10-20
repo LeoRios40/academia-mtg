@@ -1,7 +1,7 @@
 set -e
 T=/tmp/claude-0/-home-claude/0554b777-b22d-5539-bda0-fe45f712a78a/scratchpad
 cd /home/claude
-FILES="data.js fmt_data.js app.js fmt_app.js decks2.js sim.js sim2.js treino.js extras.js game2.js mods.js entenda.js gen.js import.js optflow.js mods3.js versions.js ui.js cover.js init.js"
+FILES="data.js fmt_data.js app.js fmt_app.js decks2.js sim.js sim2.js treino.js extras.js game2.js mods.js entenda.js gen.js import.js optflow.js assist.js mods3.js versions.js ui.js cover.js init.js"
 cat $FILES > $T/bundle.js
 node --check $T/bundle.js
 $T/tools/node_modules/.bin/esbuild $T/bundle.js --target=chrome61,safari12,firefox60 --minify --outfile=$T/bundle.es.js --log-level=warning

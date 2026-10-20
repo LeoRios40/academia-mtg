@@ -1014,6 +1014,34 @@ pre.code{background:#14121a;color:#e9e3d2;border:3px solid var(--border-black);b
 .seg button[data-dt="otimizar"]{border-color:var(--gold)}
 .seg button[data-dt="otimizar"]:not([aria-selected="true"])::after{content:" ✦";color:var(--gold)}
 .next.hot{border:2px solid var(--border-black);background:linear-gradient(180deg,color-mix(in srgb,var(--sec) 35%,var(--txtbox)),color-mix(in srgb,var(--sec) 15%,var(--txtbox)));grid-column:1/-1}
+
+/* ----- criar deck do zero ----- */
+.as-steps{grid-template-columns:repeat(5,1fr)}
+@media (max-width:620px){.as-steps{display:flex}.as-steps li{flex:none}.as-steps li.cur{flex:1}.as-steps li:not(.cur) button span:not(.ow-n){display:none}.as-steps button{font-size:.78rem;flex-direction:row}}
+.ow-steps li{min-width:0}
+.ow-steps .cur button:disabled{opacity:1}
+.ow-steps button span:not(.ow-n){min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.as-fmt button b{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.as-recs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:10px}
+.as-rec{display:flex;flex-direction:column;gap:4px;text-align:left;padding:12px 14px;border-radius:14px;border:2px solid var(--cardline);background:var(--txtbox-2);cursor:pointer;color:var(--ink)}
+.as-rec b{font-family:var(--f-display);font-size:1.12rem}
+.as-rec small{font-size:.85rem;line-height:1.35}
+.as-rec .pill{align-self:flex-start;margin-top:4px}
+.as-rec.main{border-color:var(--gold)}
+.as-rec[aria-pressed="true"]{border-color:var(--border-black);background:linear-gradient(180deg,color-mix(in srgb,var(--sec) 32%,var(--txtbox)),color-mix(in srgb,var(--sec) 14%,var(--txtbox)));box-shadow:inset 0 0 0 2px var(--sec)}
+.as-pips{display:flex;gap:3px}
+.as-cmds{display:flex;flex-wrap:wrap;gap:14px}
+.as-cmd{display:flex;flex-direction:column;align-items:center;gap:8px}
+.as-cmd .mcard{--cw:clamp(120px,36vw,160px)}
+.as-cmd.on .mcard{box-shadow:0 0 0 3px var(--gold),0 0 20px var(--gold)}
+.as-tab{width:100%;border-collapse:collapse;font-size:.95rem}
+.as-tab th,.as-tab td{padding:6px 10px;border-bottom:1px solid var(--cardline);text-align:left}
+.as-tab .num{text-align:right;font-variant-numeric:tabular-nums}
+.as-tab tfoot td{font-weight:800;border-bottom:0}
+.as-wc{display:flex;flex-direction:column;gap:6px}
+.wc{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:8px;border:2px solid var(--border-black);font-size:.9rem;background:var(--txtbox-2)}
+.wc b{font-family:var(--f-display);font-size:1.1rem}
+.wc-mythic{box-shadow:inset 4px 0 0 #e0562a}.wc-rare{box-shadow:inset 4px 0 0 #c9a227}.wc-uncommon{box-shadow:inset 4px 0 0 #9fb4c6}.wc-common{box-shadow:inset 4px 0 0 #333}
 </style>
 </head>
 <body>
@@ -1064,7 +1092,7 @@ pre.code{background:#14121a;color:#e9e3d2;border:3px solid var(--border-black);b
 <footer class="foot">
   <div class="foot-line">
     <span class="credit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 3c-4 2-9 7-11 10l2 2c3-2 8-7 10-11z"/><path d="M8 14c-2 0-4 1.5-4 4 0 1-1 2-2 2 2 1.5 6 1 7-1.5.5-1.2.3-2.3-.5-3"/></svg>Criado por Leonardo Rios</span>
-    <span class="cn">ACD <i>•</i> PT-BR <button class="foot-link" onclick="openUpdates(false)">Atualizações (versão <span id="verFoot">2.4</span>)</button></span>
+    <span class="cn">ACD <i>•</i> PT-BR <button class="foot-link" onclick="openUpdates(false)">Atualizações (versão <span id="verFoot">2.5</span>)</button></span>
   </div>
   <p>Ferramenta feita para ajudar no aprendizado de Magic. Imagens das cartas: Scryfall. Magic: The Gathering © Wizards of the Coast. Projeto educativo, sem fins comerciais.</p>
 </footer>

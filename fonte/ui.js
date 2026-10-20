@@ -47,7 +47,7 @@ const FEATS = [
  ['O turno','As fases e etapas de um turno','turno fases etapas',goR('turno')],
  ['Anatomia da carta','O que cada parte da carta significa','anatomia carta partes',goR('anat')],
  ['Entenda seu deck','Importe do Arena ou do deck físico: funções, sinergias, combos e dicas','entenda analisar deck combos sinergia importar arena físico',goD('entenda')],
- ['Gerar deck para o Arena','Responda perguntas e receba um deck pronto para importar','gerar deck criar sugerir arena importar lista',goD('gerar')],
+ ['Criar deck do zero','Escolha o tipo de jogo (Commander, Padrão, Brawl...), responda perguntas e receba o deck pronto','gerar criar deck do zero sugerir commander padrão brawl pauper arena lista assistente',goD('gerar')],
  ['Melhorar meu deck','Trocas sugeridas que você aceita ou recusa, e a lista otimizada para o Arena','otimizar melhorar deck arena trocas sugestões',goD('otimizar')],
  ['Importar deck','Do Arena, de planilha do Excel ou carta a carta','importar deck arena excel planilha csv colar',goD('importar')],
  ['Campanha','Sete capítulos contra o computador','campanha história capítulos',()=>{ duelSetup.mode='camp'; G=null; trTab='duelo'; show('treino'); }],
