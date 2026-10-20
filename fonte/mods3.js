@@ -24,6 +24,7 @@ const _cr = cr;
 cr = (n, label) => { const p = S.ptNames && ptOf(n); return _cr(n, label) + (p ? ` <span class="pt-n">(${esc(p)})</span>` : ''); };
 const _openCard = openCard;
 openCard = function(name){
+  if (!name) return;
   _openCard(name);
   const info = $('#modalBox .info'); if (!info) return;
   const add = p => { if (!p || $('#modalBox .pt-line')) return; const h = $('h2', info); if (h) h.insertAdjacentHTML('afterend', `<p class="pt-line muted">Em português: <b>${esc(p)}</b></p>`); };
@@ -34,7 +35,7 @@ openCard = function(name){
 window.__errs = [];
 window.addEventListener('error', e => { window.__errs.push(`${e.message} (linha ${e.lineno})`); if (window.__errs.length > 8) window.__errs.shift(); });
 window.addEventListener('unhandledrejection', e => { window.__errs.push('Promessa: ' + (e.reason && e.reason.message || e.reason)); });
-const APP_VER = '2026.10.20';
+const APP_VER = '2.1';
 function openReport(){
   const ua = navigator.userAgent;
   const dev = (ua.match(/\(([^)]+)\)/)||[])[1] || '';

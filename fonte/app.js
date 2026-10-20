@@ -276,7 +276,7 @@ RENDER.inicio = function(){
     <div class="stat"><div class="k">Melhor quiz</div><div class="v">${S.quizBest}%</div></div>
     <div class="stat"><div class="k">Conquistas</div><div class="v">${S.ach.length}/${ACH.length}</div></div>
   </div>
-  ${dailyHTML()}
+  <div class="grid g2" style="align-items:start">${dailyHTML()}<div class="panel stack-v"><div class="row-h" style="justify-content:space-between"><h3>Novidades da versão ${CUR_VER}</h3><span class="pill good">nova</span></div>${updatesHTML(false)}<button class="btn small" id="verAllHome" style="align-self:flex-start">Ver todas as atualizações</button></div></div>
   <div class="panel" style="margin-bottom:16px;margin-top:16px">
     <h3>A Centelha</h3><p class="muted" style="margin-bottom:12px">Acenda as cinco cores para despertar sua centelha de planeswalker.</p>
     <div class="spark">${ACH.map(a=>`<div class="gem ${S.ach.includes(a.id)?'on':''}" style="color:${a.col}"><div class="orb" style="background:${a.col}">${a.id}</div><div style="color:var(--ink)"><b>${a.name}</b><small>${a.desc}</small></div></div>`).join('')}</div>
@@ -318,7 +318,7 @@ RENDER.inicio = function(){
   $('#goCover').onclick = openCover;
   $('#homeLife').onclick = openLife;
   $('#homeSim').onclick = () => { trTab = 'sim'; show('treino'); };
-  bindBackup(); bindDaily();
+  bindBackup(); bindDaily(); $('#verAllHome').onclick = () => openUpdates(false);
   $$('[data-trail]').forEach(b => b.onclick = () => TRAIL[+b.dataset.trail].go());
   const cn = $('#certName'); if (cn) cn.oninput = () => { S.certName = cn.value; save(); $('.cert .nm').textContent = cn.value || 'Seu nome aqui'; };
 };

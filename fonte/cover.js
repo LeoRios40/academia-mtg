@@ -122,7 +122,7 @@ function buildCover(){
     <p style="text-align:center;margin-top:50px"><button class="cv-btn gold" id="cvEnter2">Entrar na Academia</button></p>
     <p style="text-align:center;color:#8e84a5;font-size:.82rem;margin-top:18px">Criado por Leonardo Rios. Magic: The Gathering © Wizards of the Coast. Projeto educativo, sem fins comerciais.</p>
   </div>`;
-  const enter = () => { el.hidden = true; document.body.style.overflow = ''; stopSky(); sfx('win'); RENDER[currentView] && RENDER[currentView](); if (!S.tourAsked) { S.tourAsked = true; save(); setTimeout(startTour, 400); } };
+  const enter = () => { el.hidden = true; document.body.style.overflow = ''; stopSky(); sfx('win'); RENDER[currentView] && RENDER[currentView](); if (!S.tourAsked) { S.tourAsked = true; S.seenVer = CUR_VER; save(); setTimeout(startTour, 400); } else maybeShowUpdates(); };
   $('#cvEnter').onclick = enter; $('#cvEnter2').onclick = enter;
   $('#cvExtras').onclick = () => $('#cvX').scrollIntoView({behavior:'smooth'});
   $$('[data-x]', el).forEach(b => b.onclick = () => {

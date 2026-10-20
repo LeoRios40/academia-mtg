@@ -17,7 +17,7 @@ function openSettings(){
  <label class="chk" style="border:0"><input type="checkbox" id="setPt" ${S.ptNames?'checked':''}><span><b>Nomes das cartas em português</b><br><span class="muted">Mostra o nome oficial em português ao lado do nome em inglês (busca no Scryfall).</span></span></label>
     <label class="chk" style="border:0"><input type="checkbox" id="setSound" ${S.sound?'checked':''}><span><b>Sons</b></span></label>
     <label class="chk" style="border:0"><input type="checkbox" id="setDark" ${dark?'checked':''}><span><b>Tema escuro</b></span></label>
-    <div class="row-h"><button class="btn" id="setTour">Fazer o tour</button><button class="btn" id="setRep">Relatar um problema</button>${installEvt?'<button class="btn primary" id="setInstall">Instalar como aplicativo</button>':''}</div>
+    <div class="row-h"><button class="btn" id="setTour">Fazer o tour</button><button class="btn" id="setVer">Histórico de versões</button>${installEvt?'<button class="btn primary" id="setInstall">Instalar como aplicativo</button>':''}</div>
     ${!installEvt ? `<p class="muted" style="font-size:.85rem">${location.protocol==='https:'?'Para instalar: no Chrome, abra o menu ⋮ e toque em "Adicionar à tela inicial".':'A instalação como aplicativo fica disponível quando a Academia estiver publicada num endereço da internet (veja o guia do GitHub Pages).'}</p>` : ''}
    </div>`;
   $('#modal').hidden = false;
@@ -27,7 +27,7 @@ function openSettings(){
   $('#setSound').onchange = e => { S.sound = e.target.checked; save(); };
   $('#setDark').onchange = e => { S.theme = e.target.checked ? 'dark' : 'light'; save(); applyTheme(); };
   $('#setTour').onclick = () => { closeModal(); startTour(); };
-  $('#setRep').onclick = () => openReport();
+  $('#setVer').onclick = () => openUpdates(false);
   $('#setPt').onchange = async e => { S.ptNames = e.target.checked; save(); if (S.ptNames) { toast('Buscando nomes em português…'); await fetchPT(Object.keys(CARDS)); toast('Nomes em português ativados'); } RENDER[currentView] && RENDER[currentView](); };
   const ins = $('#setInstall'); if (ins) ins.onclick = async () => { installEvt.prompt(); await installEvt.userChoice; installEvt = null; closeModal(); };
 }
@@ -54,7 +54,7 @@ const FEATS = [
  ['Primeiros passos','Magic em 8 passos, para quem nunca jogou','iniciante criança simples primeiros passos',goR('simples')],
  ['Símbolos das cartas','Mana, virar, energia, raridade','símbolos mana virar raridade',goR('simb')],
  ['Comparar comandantes','Dois comandantes lado a lado','comparar comandantes',()=>goFmt('commander')],
- ['Relatar um problema','Gera um texto com o aparelho e os erros','problema erro relatar bug',()=>openReport()],
+ ['Atualizações','O que mudou em cada versão','atualizações versões novidades histórico changelog',()=>openUpdates(false)],
  ['Lições práticas','12 situações de jogo com a mesa visual','lições aulas academia',()=>show('academia')],
  ['Quiz de regras e lore','Perguntas com explicação','quiz perguntas lore história',()=>show('quiz')],
  ['Partida contra o computador','Duelo completo 1 contra 1','jogar partida computador duelo ia',goT('duelo')],
