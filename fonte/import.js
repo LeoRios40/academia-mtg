@@ -319,8 +319,8 @@ function impResultHTML(){
         <p class="muted" style="font-size:.85rem">No Arena: <b>Decks → Importar</b>. Os nomes vão em inglês, que o Arena aceita em qualquer idioma.</p>
         <span class="eyebrow" style="margin-top:6px">O que fazer agora</span>
         <div class="next-grid">
+          <button class="next hot" data-imgo="otimizar"><b>Melhorar meu deck</b><small>Veja as trocas sugeridas, aceite as que quiser e receba a lista otimizada para o Arena</small></button>
           <button class="next" data-imgo="entenda"><b>Entender o deck</b><small>Estilo, função de cada carta, combos e dicas</small></button>
-          <button class="next" data-imgo="otimizar"><b>Otimizar para o Arena</b><small>Versão melhorada com o que entra e o que sai</small></button>
           <button class="next" data-imgo="analise"><b>Analisador</b><small>Curva de mana, cores e terrenos</small></button>
           <button class="next" data-imgo="mao"><b>Testar mãos iniciais</b><small>Compre 7 e decida o mulligan</small></button>
           <button class="next" data-imgo="sim"><b>Simular partidas</b><small>Veja em que turno o deck costuma vencer</small></button>
@@ -346,8 +346,9 @@ function bindImpResult(){
   $$('[data-imgo]').forEach(b => b.onclick = () => {
     const go = b.dataset.imgo; sendImported();
     if (go === 'sim') { simSel = 'mine'; trTab = 'sim'; show('treino'); return; }
-    deckTab = go === 'otimizar' ? 'entenda' : go; RENDER.decks();
-    if (go === 'entenda' || go === 'otimizar') entAnalyze().then(() => { if (go === 'otimizar') { const o = $('#optPanel') || $('#optGo'); if (o) o.scrollIntoView({behavior:'smooth', block:'center'}); } });
+    if (go === 'otimizar') { ow.step = 1; ow.sugg = null; opt.res = null; deckTab = 'otimizar'; RENDER.decks(); const st = $('#owSt'); if (st) st.textContent = 'Lendo o deck…'; entAnalyze().then(() => { if (deckTab === 'otimizar') { ow.step = ent.A ? 2 : 1; renderOptFlow(); } }); window.scrollTo({top:0}); return; }
+    deckTab = go; RENDER.decks();
+    if (go === 'entenda') entAnalyze();
     window.scrollTo({top:0});
   });
 }

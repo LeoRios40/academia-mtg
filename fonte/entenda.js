@@ -201,10 +201,10 @@ function drawEnt(){
    </ol>
    ${tips.length?`<div class="sub-h"><h2>Pontos de atenção</h2></div><div class="panel"><ul class="checks">${tips.map(t=>`<li><span class="pill warn">dica</span><span>${t}</span></li>`).join('')}</ul></div>`:''}
    <div class="row-h" style="margin-top:14px"><button class="btn" id="entToAn">Abrir no Analisador</button><button class="btn" id="entToSim">Simular este deck</button><button class="btn" id="entToArena">Levar ao Arena</button></div>
-   ${optPanelHTML()}`;
+   <div class="panel ow-cta"><div><h3 style="margin:0 0 4px">Quer uma versão melhorada deste deck?</h3><p class="muted" style="margin:0">Veja as trocas sugeridas, aceite as que quiser e receba a lista pronta para o Arena.</p></div><button class="btn primary" id="entToOw">Melhorar meu deck</button></div>`;
   const send = () => { deckText = ent.txt; deckFormat = A.fmt === '100' ? '100' : A.fmt === '40' ? '40' : '60'; DECK = null; hand = null; };
   $('#entToAn').onclick = () => { send(); deckTab = 'analise'; RENDER.decks(); };
   $('#entToSim').onclick = () => { send(); simSel = 'mine'; trTab = 'sim'; show('treino'); };
   $('#entToArena').onclick = () => { send(); deckTab = 'arena'; RENDER.decks(); };
-  bindOpt();
+  const tow = $('#entToOw'); if (tow) tow.onclick = () => { ow.step = 2; ow.sugg = null; opt.res = null; deckTab = 'otimizar'; RENDER.decks(); window.scrollTo({top:0}); };
 }

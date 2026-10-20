@@ -895,6 +895,125 @@ input[type=number]:focus,input[type=text]:focus,select:focus,textarea:focus{outl
 .stat .bar i{background:linear-gradient(90deg,var(--sec),color-mix(in srgb,var(--sec) 60%,#fff))}
 .hero .lede{font-family:var(--f-flavor);font-style:italic;font-size:1.15rem}
 details > summary{font-family:var(--f-display);font-weight:600}
+/* ===================== v2.4 · MESA DE JOGO =====================
+   A tela vira um tapete de jogo (playmat) e cada painel vira uma carta:
+   borda preta, moldura na cor da seção, barra de nome e caixa de texto. */
+:root{
+  --mat:#c9d0d8; --mat-2:#b9c1cb; --txtbox:#f7f3ea; --txtbox-2:#ece6d8; --cardline:#cfc6b2;
+  --surface:#f7f3ea; --surface-2:#ece6d8; --line:#cfc6b2; --ink:#1d1a16; --muted:#5f574b;
+  --border-black:#0c0b10;
+}
+:root[data-theme="dark"]{--mat:#172131; --mat-2:#101826; --txtbox:#1c1a22; --txtbox-2:#25222d; --cardline:#3a3545; --surface:#1c1a22; --surface-2:#25222d; --line:#3a3545; --ink:#efe9f4; --muted:#aaa1b8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--mat:#172131; --mat-2:#101826; --txtbox:#1c1a22; --txtbox-2:#25222d; --cardline:#3a3545; --surface:#1c1a22; --surface-2:#25222d; --line:#3a3545; --ink:#efe9f4; --muted:#aaa1b8}}
+
+/* tapete: feltro com textura, vinheta e o círculo das cinco cores ao fundo */
+body{background-color:var(--mat);
+  background-image:
+    radial-gradient(ellipse at 50% 38%,transparent 40%,rgba(0,0,0,.28) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(900px 600px at 80% -10%,color-mix(in srgb,var(--sec) 26%,transparent),transparent 70%);
+  background-attachment:scroll}
+main{position:relative}
+main::before{content:"";position:fixed;z-index:-1;pointer-events:none;width:min(900px,120vw);aspect-ratio:1;right:-18%;bottom:-30%;opacity:.07;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' fill='none' stroke='%23fff' stroke-width='1.2'%3E%3Ccircle cx='100' cy='100' r='96'/%3E%3Ccircle cx='100' cy='100' r='86' stroke-dasharray='2 5'/%3E%3Ccircle cx='100' cy='100' r='60'/%3E%3Cpath d='M100 14 182 74 151 170H49L18 74Z'/%3E%3Cpath d='M100 14 151 170 18 74H182L49 170Z'/%3E%3Ccircle cx='100' cy='14' r='10'/%3E%3Ccircle cx='182' cy='74' r='10'/%3E%3Ccircle cx='151' cy='170' r='10'/%3E%3Ccircle cx='49' cy='170' r='10'/%3E%3Ccircle cx='18' cy='74' r='10'/%3E%3C/svg%3E") center/contain no-repeat}
+:root:not([data-theme="dark"]) main::before{filter:invert(1)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) main::before{filter:none}}
+
+/* ----- o painel é uma carta ----- */
+.panel{border:7px solid var(--border-black);border-radius:18px;background:var(--txtbox);padding:16px 18px 18px;
+  box-shadow:inset 0 0 0 4px var(--sec),inset 0 0 0 5px rgba(0,0,0,.35),inset 0 0 0 6px rgba(255,255,255,.18),0 2px 0 rgba(0,0,0,.25),0 18px 30px -18px rgba(0,0,0,.65)}
+.panel > h3:first-child{margin:-2px -4px 14px;padding:7px 14px;border-radius:10px 10px 10px 10px / 14px 14px 10px 10px;font-size:1.14rem;color:var(--ink);
+  background:linear-gradient(180deg,color-mix(in srgb,var(--sec) 40%,var(--txtbox)),color-mix(in srgb,var(--sec) 20%,var(--txtbox)));
+  border:2px solid color-mix(in srgb,var(--sec) 55%,#000);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 2px 3px rgba(0,0,0,.3)}
+.panel .panel,.modal .panel{border-width:1px;border-color:var(--cardline);border-radius:12px;box-shadow:none;background:var(--txtbox-2)}
+.panel .panel > h3:first-child{margin:0 0 8px;padding:0;background:none;border:0;box-shadow:none}
+.stat{border:6px solid var(--border-black);border-radius:16px;background:var(--txtbox);box-shadow:inset 0 0 0 3px var(--sec),inset 0 0 0 4px rgba(0,0,0,.3),0 14px 24px -16px rgba(0,0,0,.7)}
+.modal-box{border:8px solid var(--border-black);border-radius:20px;background:var(--txtbox);box-shadow:inset 0 0 0 4px var(--gold),0 30px 60px rgba(0,0,0,.6)}
+.toast{border:3px solid var(--border-black);box-shadow:inset 0 0 0 2px var(--gold),0 10px 24px rgba(0,0,0,.4)}
+
+/* ----- título da seção: a barra de nome da carta ----- */
+.view-head{padding-bottom:0;margin-bottom:22px}
+.view-head::after{display:none}
+.view-head h1{align-self:flex-start;display:inline-block;max-width:100%;padding:6px 22px 8px;border-radius:14px 14px 14px 14px / 20px 20px 14px 14px;color:#16131c;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--sec) 55%,#fff),color-mix(in srgb,var(--sec) 85%,#000));
+  border:3px solid var(--border-black);box-shadow:inset 0 2px 0 rgba(255,255,255,.55),inset 0 -3px 0 rgba(0,0,0,.18),0 6px 16px -6px rgba(0,0,0,.6);font-size:clamp(1.6rem,4.4vw,2.5rem)}
+body[data-sec="academia"] .view-head h1,body[data-sec="quiz"] .view-head h1,body[data-sec="treino"] .view-head h1,body[data-sec="formatos"] .view-head h1,body[data-sec="decks"] .view-head h1{color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.45)}
+.view-head p{margin-top:4px;padding-left:14px;border-left:2px solid color-mix(in srgb,var(--sec) 70%,transparent)}
+
+/* ----- menu: uma mão de cartas ----- */
+@media (min-width:821px){
+  .tabs{gap:6px;align-items:flex-end}
+  .tab{position:relative;flex-direction:column;justify-content:flex-end;gap:0;width:76px;height:46px;padding:5px 4px 5px;border-radius:7px;font-size:.8rem;
+    background:linear-gradient(180deg,var(--pip) 0 11px,#1e1b26 11px);border:2px solid #000;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);color:#cfc7dc;
+    transform:translateY(3px);transition:transform .15s ease,box-shadow .15s ease}
+  .tab::before{display:none}
+  .tab span{line-height:1.1}
+  .tab:hover{transform:translateY(0);background:linear-gradient(180deg,var(--pip) 0 11px,#2a2633 11px);color:#fff}
+  .tab[aria-current="page"],.tab[aria-current="page"]:hover{transform:translateY(-2px);color:#16121c;background:linear-gradient(180deg,var(--pip) 0 11px,color-mix(in srgb,var(--pip) 45%,#fff) 11px);
+    box-shadow:0 0 0 2px #000,0 0 16px 2px color-mix(in srgb,var(--pip) 75%,transparent)}
+  .top-in{padding-top:8px;padding-bottom:12px}
+  .top{overflow:visible}
+}
+@media (min-width:821px) and (max-width:1100px){.tab{width:64px;font-size:.74rem}}
+@media (max-width:820px){
+  .tabs{padding-top:8px;align-items:flex-end}
+  .tab{border:2px solid #000;border-radius:7px;margin:0 2px;padding:14px 2px 5px;background:linear-gradient(180deg,var(--pip) 0 8px,#1e1b26 8px);color:#cfc7dc;transition:transform .15s ease}
+  .tab::before{display:none}
+  .tab[aria-current="page"],.tab[aria-current="page"]:hover{transform:translateY(-10px);color:#16121c;background:linear-gradient(180deg,var(--pip) 0 8px,color-mix(in srgb,var(--pip) 45%,#fff) 8px);box-shadow:0 0 14px 1px color-mix(in srgb,var(--pip) 70%,transparent)}
+}
+@media (prefers-reduced-motion:reduce){.tab{transition:none}}
+
+/* ----- botões ----- */
+.btn{border:2px solid color-mix(in srgb,var(--ink) 25%,var(--cardline));background:var(--txtbox)}
+.btn.primary{border:2px solid var(--border-black)}
+.seg button,.chip{border:2px solid color-mix(in srgb,var(--ink) 18%,var(--cardline));background:var(--txtbox)}
+.seg button[aria-selected="true"],.chip[aria-pressed="true"]{border-color:var(--border-black);background:linear-gradient(180deg,color-mix(in srgb,var(--sec) 45%,var(--txtbox)),color-mix(in srgb,var(--sec) 25%,var(--txtbox)));color:var(--ink);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+input[type=number],input[type=text],select,textarea{background:color-mix(in srgb,var(--txtbox) 60%,#fff);border:2px solid var(--cardline)}
+:root[data-theme="dark"] input[type=number],:root[data-theme="dark"] input[type=text],:root[data-theme="dark"] select,:root[data-theme="dark"] textarea{background:#14121a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :is(input[type=number],input[type=text],select,textarea){background:#14121a}}
+pre.code{background:#14121a;color:#e9e3d2;border:3px solid var(--border-black);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.seg-g .sg-l{color:var(--ink);opacity:.75}
+
+/* ----- melhorar meu deck ----- */
+.ow-steps{list-style:none;margin:2px 0 6px;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;counter-reset:s}
+.ow-steps button{width:100%;display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;border:2px solid var(--cardline);background:var(--txtbox-2);color:var(--muted);font-weight:800;cursor:pointer;text-align:left;min-height:46px}
+.ow-steps button:disabled{cursor:default;opacity:.6}
+.ow-n{flex:none;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--border-black);color:#f3d68c;font-family:var(--f-display);font-weight:700}
+.ow-steps .cur button{border-color:var(--border-black);color:var(--ink);background:linear-gradient(180deg,color-mix(in srgb,var(--sec) 40%,var(--txtbox)),color-mix(in srgb,var(--sec) 20%,var(--txtbox)))}
+.ow-steps .done button{color:var(--ink)}
+.ow-steps .done .ow-n{background:var(--good);color:#fff}
+@media (max-width:620px){.ow-steps{grid-template-columns:repeat(4,1fr)}.ow-steps button{flex-direction:column;gap:3px;padding:6px 2px;font-size:.72rem;text-align:center}}
+.ow-deck{padding:12px 14px;border-radius:12px;border:2px dashed var(--cardline);background:var(--txtbox-2)}
+.ow-diag{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:14px;align-items:start}
+@media (max-width:700px){.ow-diag{grid-template-columns:1fr}}
+.ow-sum{padding:14px;border-radius:12px;background:var(--txtbox-2);border:2px solid var(--cardline)}
+.ow-big{display:flex;align-items:center;gap:6px;font-family:var(--f-display);font-size:1.5rem}
+.ow-issues{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.ow-issues li{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border-radius:10px;background:var(--txtbox-2)}
+.ow-issues .dot{flex:none;width:10px;height:10px;border-radius:50%;margin-top:7px;background:var(--good)}
+.ow-issues .warn .dot{background:var(--warn)} .ow-issues .bad .dot{background:var(--bad)}
+.ow-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:12px}
+.ow-s{border-radius:14px;border:2px solid var(--cardline);background:var(--txtbox-2);padding:12px;display:flex;flex-direction:column;gap:10px}
+.ow-s.on{border-color:var(--good);box-shadow:inset 0 0 0 1px var(--good)}
+.ow-s.off{opacity:.62}
+.ow-s-h{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.ow-tg{display:inline-flex;border:2px solid var(--border-black);border-radius:10px;overflow:hidden;flex:none}
+.ow-tg button{border:0;padding:6px 12px;font-weight:800;cursor:pointer;background:var(--txtbox);color:var(--muted);min-height:36px}
+.ow-tg button[data-acc][aria-pressed="true"]{background:var(--good);color:#fff}
+.ow-tg button[data-rej][aria-pressed="true"]{background:var(--bad);color:#fff}
+.ow-s-c{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ow-c{position:relative}
+.ow-c .mcard{--cw:clamp(86px,24vw,110px)}
+.ow-c.out .mcard{filter:grayscale(.55) brightness(.9)}
+.ow-c.out::after{content:"Sai";position:absolute;left:50%;bottom:8px;transform:translateX(-50%);background:var(--bad);color:#fff;font-weight:800;font-size:.75rem;padding:1px 8px;border-radius:6px;border:2px solid #000}
+.ow-c.in::after{content:"Entra";position:absolute;left:50%;bottom:8px;transform:translateX(-50%);background:var(--good);color:#fff;font-weight:800;font-size:.75rem;padding:1px 8px;border-radius:6px;border:2px solid #000}
+.ow-arrow{font-size:1.6rem;color:var(--muted)}
+.ow-why{margin:0;font-size:.86rem}
+.ow-lands{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;font-size:.9rem}.ow-lands p{margin:2px 0 0}
+.ow-cta{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:16px}
+.seg button[data-dt="otimizar"]{border-color:var(--gold)}
+.seg button[data-dt="otimizar"]:not([aria-selected="true"])::after{content:" ✦";color:var(--gold)}
+.next.hot{border:2px solid var(--border-black);background:linear-gradient(180deg,color-mix(in srgb,var(--sec) 35%,var(--txtbox)),color-mix(in srgb,var(--sec) 15%,var(--txtbox)));grid-column:1/-1}
 </style>
 </head>
 <body>
@@ -945,7 +1064,7 @@ details > summary{font-family:var(--f-display);font-weight:600}
 <footer class="foot">
   <div class="foot-line">
     <span class="credit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 3c-4 2-9 7-11 10l2 2c3-2 8-7 10-11z"/><path d="M8 14c-2 0-4 1.5-4 4 0 1-1 2-2 2 2 1.5 6 1 7-1.5.5-1.2.3-2.3-.5-3"/></svg>Criado por Leonardo Rios</span>
-    <span class="cn">ACD <i>•</i> PT-BR <button class="foot-link" onclick="openUpdates(false)">Atualizações (versão <span id="verFoot">2.3</span>)</button></span>
+    <span class="cn">ACD <i>•</i> PT-BR <button class="foot-link" onclick="openUpdates(false)">Atualizações (versão <span id="verFoot">2.4</span>)</button></span>
   </div>
   <p>Ferramenta feita para ajudar no aprendizado de Magic. Imagens das cartas: Scryfall. Magic: The Gathering © Wizards of the Coast. Projeto educativo, sem fins comerciais.</p>
 </footer>
