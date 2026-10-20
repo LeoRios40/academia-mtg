@@ -225,21 +225,22 @@ function simTurn(g){
     else if (s.k === 'creature') {
       const o = enter(n, s.tribe, s.p, s.f); if (fromCmd) o.isCmd = true;
       if (s.f.burnEtb) { g.opp -= s.f.burnEtb; g.dealt += s.f.burnEtb; }
+      if (s.f.drainTr) { const k = creaturesOf(g, s.f.drainTr); g.opp -= k; g.dealt += k; A.push(`  → oponente perde ${k} de vida.`); }
       g.bf.filter(y => y.f.castTok && y !== o && y.tribe === s.tribe).forEach(() => addTok(s.tribe, 1));
     }
     else if (s.k === 'enchantment' || s.k === 'artifact') g.bf.push({n, k:s.k, tribe:'', p:0, f:s.f, sick:false, noncreature:true});
     if (s.f.ramp) { if (s.k !== 'artifact') { if (s.f.ramp.untapped) { g.lands += s.f.ramp.bf; pool += s.f.ramp.bf; } else { g.lands += s.f.ramp.bf; g.landsTapped += s.f.ramp.bf; g.pendingLandsTapped += 0; } if (s.f.ramp.hand) g.hand.push('Terreno básico'); A.push(`  → buscou ${s.f.ramp.bf + (s.f.ramp.hand||0)} terreno(s).`); } }
     if (s.f.draw) { for (let i=0;i<s.f.draw && g.lib.length;i++) g.hand.push(g.lib.shift()); if (s.f.discard) { for (let i=0;i<s.f.discard;i++) { const j = g.hand.findIndex(x => simOf(x).f.skip) ; g.gy.push(g.hand.splice(j>=0?j:0,1)[0]); } } A.push(`  → comprou ${s.f.draw}.`); }
     if (s.f.treas) { pool += s.f.treas; A.push(`  → ${s.f.treas} Tesouros.`); }
-    if (s.f.tok && s.k !== 'creature') addTok(s.f.tokTr || 'Goblin', s.f.tok);
+    if (s.f.tok && s.k !== 'creature') addTok(s.f.tokTr || 'Goblin', s.f.tok, s.f.tokP || 1);
     if (s.f.tok && s.k === 'creature') addTok(s.tribe || 'Goblin', s.f.tok);
     if (s.f.tokPerTr) { const k = creaturesOf(g, s.f.tokPerTr); addTok(s.f.tokPerTr, k); }
     if (s.f.xland) landDrops++;
     if (s.f.burn) { g.opp -= s.f.burn; g.dealt += s.f.burn; A.push(`  → ${s.f.burn} de dano no oponente.`); }
     if (s.f.overrun) g.overrun = s.f.overrun;
-    if (s.k === 'instant' || s.k === 'sorcery') g.gy.push(n);
+    if (s.k === 'instant' || s.k === 'sorcery') { g.gy.push(n); g.bf.forEach(y => { if (y.f.spellTok) addTok(y.f.spellTok.tr, 1, y.f.spellTok.p); if (y.f.spellDraw && g.lib.length) g.hand.push(g.lib.shift()); }); }
   };
-  const addTok = (tr, k) => { if (!k) return; const key = tr || 'Ficha'; g.tokens[key] = g.tokens[key] || {n:0, ready:0, sick:0}; g.tokens[key].n += k; g.tokens[key].sick += k; const e = g.bf.filter(y=>y.f.etb).length * k; if (e) { g.opp -= e; g.dealt += e; } A.push(`  → ${k} ficha(s) de ${tr} 1/1.`); };
+  const addTok = (tr, k, tp) => { if (!k) return; const key = tr || 'Ficha'; g.tokens[key] = g.tokens[key] || {n:0, ready:0, sick:0, p: tp || 1}; g.tokens[key].n += k; g.tokens[key].sick += k; const e = g.bf.filter(y=>y.f.etb).length * k; if (e) { g.opp -= e; g.dealt += e; } A.push(`  → ${k} ficha(s) de ${tr} ${g.tokens[key].p}/${g.tokens[key].p}.`); };
   // bauble
   g.rocks.filter(r => r.bauble && r.ready).forEach(r => { if (pool >= 2) { pool -= 2; spent += 2; g.lands++; g.landsTapped++; g.rocks.splice(g.rocks.indexOf(r),1); A.push('Ativou Wayfarer\'s Bauble: buscou um terreno.'); } });
   while (progress) {
@@ -262,6 +263,9 @@ function simTurn(g){
     if (x.n === 'Krenko, Mob Boss' && canTap(x)) { const k = creaturesOf(g, 'Goblin'); x.tapped = true; A.push(`Virou Krenko (há ${k} Goblins no campo):`); addTok('Goblin', k); }
     if (x.f.act && canTap(x) && pool >= 1) { pool--; x.tapped = true; addTok(x.tribe, 1); }
   });
+  // Lathril: vira dez Elfos para drenar 10
+  let lathrilTapped = false;
+  g.bf.forEach(x => { if (x.f.lathril && canTap(x) && creaturesOf(g, 'Elfo') >= 11) { g.opp -= 10; g.dealt += 10; lathrilTapped = true; x.tapped = true; A.push('Lathril e dez Elfos viraram: o oponente perde 10 de vida.'); } });
   // Ezuri: +3/+3 nos Elfos com o mana que sobrou
   let ezuriBonus = 0;
   if (g.bf.some(x => x.n === 'Ezuri, Renegade Leader')) { while (pool >= 5) { pool -= 5; ezuriBonus += 3; } if (ezuriBonus) A.push(`Ativou Ezuri: Elfos +${ezuriBonus}/+${ezuriBonus}.`); }
@@ -270,11 +274,13 @@ function simTurn(g){
   // combate (sem bloqueadores)
   let dmg = 0, cmdHit = 0, attackers = 0;
   const bonus = x => (g.overrun||0) + (x.tribe === 'Elfo' ? ezuriBonus : 0);
-  g.bf.forEach(x => { if (x.noncreature || x.tapped || x.f.def || !canTap(x)) return; if ((x.f.mana || x.f.manaTr) && x.p <= 1 && !g.overrun && !ezuriBonus) return; const p = powerOf(g, x) + bonus(x); if (p <= 0) return; attackers++; dmg += p; if (x.isCmd) cmdHit += p; });
-  Object.entries(g.tokens).forEach(([tr, tk]) => { const ready = tk.ready + (hasteTr().includes(tr) ? tk.sick : 0); if (!ready) return; let p = 1; g.bf.forEach(y => { const a = y.f.anth; if (a && a.tr === tr) p += a.n; }); p += (g.overrun||0) + (tr==='Elfo'?ezuriBonus:0); attackers += ready; dmg += ready * p; });
+  let lathrilDmg = 0;
+  g.bf.forEach(x => { if (x.noncreature || x.tapped || x.f.def || !canTap(x)) return; if (lathrilTapped && x.tribe === 'Elfo') return; if ((x.f.mana || x.f.manaTr) && x.p <= 1 && !g.overrun && !ezuriBonus) return; const p = powerOf(g, x) + bonus(x); if (p <= 0) return; attackers++; dmg += p; if (x.isCmd) cmdHit += p; if (x.f.lathril) lathrilDmg = p; });
+  Object.entries(g.tokens).forEach(([tr, tk]) => { if (lathrilTapped && tr === 'Elfo') return;  const ready = tk.ready + (hasteTr().includes(tr) ? tk.sick : 0); if (!ready) return; let p = tk.p || 1; g.bf.forEach(y => { const a = y.f.anth; if (a && a.tr === tr) p += a.n; }); p += (g.overrun||0) + (tr==='Elfo'?ezuriBonus:0); attackers += ready; dmg += ready * p; });
   const ping = g.bf.filter(y => y.f.atkPing).length * attackers;
   if (attackers) { A.push(`Atacou com ${attackers} criatura(s): <b>${dmg + ping}</b> de dano${ping?` (inclui ${ping} do Hellrider)`:''}${cmdHit?`, ${cmdHit} do comandante`:''}.`); }
   g.opp -= dmg + ping; g.dealt += dmg + ping; g.cmdDmg += cmdHit;
+  if (lathrilDmg) { addTok('Elfo', lathrilDmg); A.push(`Lathril causou dano: ${lathrilDmg} Elfos criados.`); }
   // dano direto guardado: usa no fim do turno se houver mana
   g.hand.slice().forEach(n => { const s = simOf(n); if (s.f.burn && s.cmc <= pool) { pool -= s.cmc; g.hand.splice(g.hand.indexOf(n),1); g.opp -= s.f.burn; g.dealt += s.f.burn; A.push(`Fim do turno: ${esc(n)} no oponente (${s.f.burn}).`); } });
   g.overrun = 0; g.bf.forEach(x => x.tapped = false);

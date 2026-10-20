@@ -3,11 +3,11 @@ let trTab = 'duelo';
 RENDER.treino = function(){
   $('#v-treino').innerHTML = `
    <div class="view-head"><h1>Treino</h1><p>Pratique como os veteranos: jogue contra o computador, simule decks, resolva quebra-cabeças e treine bloqueios, mulligan, pilha e Draft. Para a mesa de verdade: contador de vida, grupo de amigos com torneio e o árbitro de bolso.</p></div>
-   <div class="seg" role="tablist">${[['duelo','Partida contra o computador'],['sim','Simulador de deck'],['puz','Quebra-cabeças'],['bloq','Bloqueios'],['ler','Ler a mesa'],['mull','Mulligan'],['pilha','Pilha'],['draft','Draft'],['vida','Contador de vida'],['grupo','Grupo e torneio'],['juiz','Árbitro de bolso'],['calc','Calculadora de combate']].map(([k,l])=>`<button role="tab" data-tt="${k}" aria-selected="${trTab===k}">${l}</button>`).join('')}</div>
+   <div class="seg" role="tablist">${[['duelo','Partida contra o computador'],['sim','Simulador de deck'],['puz','Quebra-cabeças'],['criar','Criar quebra-cabeça'],['bloq','Bloqueios'],['ler','Ler a mesa'],['mull','Mulligan'],['pilha','Pilha'],['draft','Draft'],['vida','Contador de vida'],['grupo','Grupo e torneio'],['juiz','Árbitro de bolso'],['calc','Calculadora de combate']].map(([k,l])=>`<button role="tab" data-tt="${k}" aria-selected="${trTab===k}">${l}</button>`).join('')}</div>
    <div id="trBody"></div>`;
   $$('[data-tt]').forEach(b => b.onclick = () => { if (b.dataset.tt === 'calc') { show('combate'); return; } trTab = b.dataset.tt; RENDER.treino(); });
   const box = $('#trBody');
-  ({duelo:renderDuel, sim:renderSim, puz:renderPuz, bloq:renderBlk, ler:renderRead, mull:renderMull, pilha:renderStack, draft:renderDraft, vida:renderLifeIntro, grupo:renderGroup, juiz:renderJudge})[trTab](box);
+  ({custom:renderCustomPuz, criar:renderPuzCreator, duelo:renderDuel, sim:renderSim, puz:renderPuz, bloq:renderBlk, ler:renderRead, mull:renderMull, pilha:renderStack, draft:renderDraft, vida:renderLifeIntro, grupo:renderGroup, juiz:renderJudge})[trTab](box);
   seen('t_'+trTab);
 };
 

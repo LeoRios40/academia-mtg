@@ -651,6 +651,25 @@ pre.code{background:var(--surface-2);border:1px solid var(--line);border-radius:
 .guess{width:100%;max-width:520px;aspect-ratio:4/3;border-radius:12px;background-color:#111;background-repeat:no-repeat;border:1px solid #3a3150;transition:background-size .5s,background-position .5s}
 .say{border:0;background:none;cursor:pointer;font-size:1rem;padding:0 4px;vertical-align:middle}
 
+.ext,a{overflow-wrap:anywhere}
+p,li,td{overflow-wrap:break-word}
+.pt-n{color:var(--muted);font-size:.85em;font-weight:400}
+.sym-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:10px}
+.sym{display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.sym img,.sym .ms{flex:none;width:36px;height:36px;font-size:1.6rem}
+.sym p{font-size:.9rem;color:var(--muted)}
+.rar{width:22px;height:22px;border-radius:50%;display:inline-block;border:1px solid var(--line)}
+.simple-hero{background:var(--accent-soft);border-radius:16px;padding:20px;margin-bottom:14px}
+.simple-hero h2{font-size:clamp(1.6rem,5vw,2.3rem)}
+.simple-hero p{font-size:1.15rem;margin-top:6px}
+.simple-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:14px}
+.simple-card{position:relative;background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
+.simple-card .mcard{--cw:120px}
+.simple-card h3{font-size:1.25rem}
+.simple-card p{font-size:1.05rem}
+.simple-n{position:absolute;top:10px;left:12px;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--f-mono);font-weight:700;font-size:1.1rem}
+.simple-quiz{font-size:1.05rem}
+
 </style>
 </head>
 <body>
@@ -699,7 +718,7 @@ pre.code{background:var(--surface-2);border:1px solid var(--line);border-radius:
 </main>
 
 <footer class="foot">
-  <span>Criado por Leonardo Rios para ajudar no aprendizado de Magic.</span>
+  <span>Criado por Leonardo Rios para ajudar no aprendizado de Magic. <button class="cref" onclick="openReport()">Relatar um problema</button></span>
   <span>Imagens das cartas: Scryfall. Magic: The Gathering © Wizards of the Coast. Projeto educativo, sem fins comerciais.</span>
 </footer>
 

@@ -14,9 +14,10 @@ function openSettings(){
     <div class="stack-v" style="gap:6px"><span class="eyebrow">Tamanho da letra</span><div class="row-h">${[90,100,115,130].map(v=>`<button class="chip" data-fs="${v}" aria-pressed="${(S.fs||100)===v}" style="font-size:${v/100}rem">${v===100?'Normal':v<100?'Menor':v===115?'Grande':'Muito grande'}</button>`).join('')}</div></div>
     <label class="chk" style="border:0"><input type="checkbox" id="setHc" ${S.hc?'checked':''}><span><b>Alto contraste</b><br><span class="muted">Textos e bordas mais fortes, para ler com mais facilidade.</span></span></label>
     <label class="chk" style="border:0"><input type="checkbox" id="setLite" ${S.lite?'checked':''}><span><b>Modo leve</b><br><span class="muted">Desliga animações, o céu estrelado da capa e o brilho das cartas. Recomendado para celulares mais simples.</span></span></label>
+ <label class="chk" style="border:0"><input type="checkbox" id="setPt" ${S.ptNames?'checked':''}><span><b>Nomes das cartas em português</b><br><span class="muted">Mostra o nome oficial em português ao lado do nome em inglês (busca no Scryfall).</span></span></label>
     <label class="chk" style="border:0"><input type="checkbox" id="setSound" ${S.sound?'checked':''}><span><b>Sons</b></span></label>
     <label class="chk" style="border:0"><input type="checkbox" id="setDark" ${dark?'checked':''}><span><b>Tema escuro</b></span></label>
-    <div class="row-h"><button class="btn" id="setTour">Fazer o tour</button>${installEvt?'<button class="btn primary" id="setInstall">Instalar como aplicativo</button>':''}</div>
+    <div class="row-h"><button class="btn" id="setTour">Fazer o tour</button><button class="btn" id="setRep">Relatar um problema</button>${installEvt?'<button class="btn primary" id="setInstall">Instalar como aplicativo</button>':''}</div>
     ${!installEvt ? `<p class="muted" style="font-size:.85rem">${location.protocol==='https:'?'Para instalar: no Chrome, abra o menu ⋮ e toque em "Adicionar à tela inicial".':'A instalação como aplicativo fica disponível quando a Academia estiver publicada num endereço da internet (veja o guia do GitHub Pages).'}</p>` : ''}
    </div>`;
   $('#modal').hidden = false;
@@ -26,6 +27,8 @@ function openSettings(){
   $('#setSound').onchange = e => { S.sound = e.target.checked; save(); };
   $('#setDark').onchange = e => { S.theme = e.target.checked ? 'dark' : 'light'; save(); applyTheme(); };
   $('#setTour').onclick = () => { closeModal(); startTour(); };
+  $('#setRep').onclick = () => openReport();
+  $('#setPt').onchange = async e => { S.ptNames = e.target.checked; save(); if (S.ptNames) { toast('Buscando nomes em português…'); await fetchPT(Object.keys(CARDS)); toast('Nomes em português ativados'); } RENDER[currentView] && RENDER[currentView](); };
   const ins = $('#setInstall'); if (ins) ins.onclick = async () => { installEvt.prompt(); await installEvt.userChoice; installEvt = null; closeModal(); };
 }
 
@@ -43,6 +46,15 @@ const FEATS = [
  ['Habilidades (palavras-chave)','Voar, atropelar, toque mortífero e outras, com exemplos','habilidades keywords palavras chave glossário',goR('hab')],
  ['O turno','As fases e etapas de um turno','turno fases etapas',goR('turno')],
  ['Anatomia da carta','O que cada parte da carta significa','anatomia carta partes',goR('anat')],
+ ['Entenda seu deck','Importe do Arena ou do deck físico: funções, sinergias, combos e dicas','entenda analisar deck combos sinergia importar arena físico',goD('entenda')],
+ ['Campanha','Sete capítulos contra o computador','campanha história capítulos',()=>{ duelSetup.mode='camp'; G=null; trTab='duelo'; show('treino'); }],
+ ['Dois jogadores no mesmo aparelho','Ensine alguém jogando no mesmo celular','dois jogadores mesmo aparelho ensinar hotseat',()=>{ duelSetup.mode='pvp'; G=null; trTab='duelo'; show('treino'); }],
+ ['Criar quebra-cabeça','Monte e compartilhe por link','criar quebra cabeça compartilhar link',goT('criar')],
+ ['Desafio do dia','Uma pergunta nova por dia','desafio diário dia sequência',()=>show('inicio')],
+ ['Primeiros passos','Magic em 8 passos, para quem nunca jogou','iniciante criança simples primeiros passos',goR('simples')],
+ ['Símbolos das cartas','Mana, virar, energia, raridade','símbolos mana virar raridade',goR('simb')],
+ ['Comparar comandantes','Dois comandantes lado a lado','comparar comandantes',()=>goFmt('commander')],
+ ['Relatar um problema','Gera um texto com o aparelho e os erros','problema erro relatar bug',()=>openReport()],
  ['Lições práticas','12 situações de jogo com a mesa visual','lições aulas academia',()=>show('academia')],
  ['Quiz de regras e lore','Perguntas com explicação','quiz perguntas lore história',()=>show('quiz')],
  ['Partida contra o computador','Duelo completo 1 contra 1','jogar partida computador duelo ia',goT('duelo')],

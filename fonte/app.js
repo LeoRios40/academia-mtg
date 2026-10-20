@@ -193,6 +193,9 @@ const ACH = [
   {id:'P',col:'var(--info)',name:'Mestre dos enigmas',desc:'Resolva todos os quebra-cabeças',test:()=>Object.keys(S.puz||{}).length>=8},
   {id:'S',col:'var(--good)',name:'Simulador',desc:'Simule 1.000 partidas de um deck',test:()=>!!S.simDone},
   {id:'D',col:'var(--warn)',name:'Construtor criativo',desc:'Conclua 3 desafios de construção',test:()=>Object.keys(S.chal||{}).length>=3},
+  {id:'H',col:'var(--bad)',name:'Herói da campanha',desc:'Complete os 7 capítulos da campanha',test:()=>!!S.campDone},
+  {id:'A',col:'var(--info)',name:'Analista',desc:'Use "Entenda seu deck"',test:()=>!!S.entDone},
+  {id:'7',col:'var(--warn)',name:'Constância',desc:'Desafio do dia 7 dias seguidos',test:()=>((S.dly||{}).best||0)>=7},
   {id:'★',col:'#e7b8ff',name:'Centelha secreta',desc:'Descubra o segredo da capa',test:()=>S.secret}
 ];
 function checkAch(){
@@ -273,7 +276,8 @@ RENDER.inicio = function(){
     <div class="stat"><div class="k">Melhor quiz</div><div class="v">${S.quizBest}%</div></div>
     <div class="stat"><div class="k">Conquistas</div><div class="v">${S.ach.length}/${ACH.length}</div></div>
   </div>
-  <div class="panel" style="margin-bottom:16px">
+  ${dailyHTML()}
+  <div class="panel" style="margin-bottom:16px;margin-top:16px">
     <h3>A Centelha</h3><p class="muted" style="margin-bottom:12px">Acenda as cinco cores para despertar sua centelha de planeswalker.</p>
     <div class="spark">${ACH.map(a=>`<div class="gem ${S.ach.includes(a.id)?'on':''}" style="color:${a.col}"><div class="orb" style="background:${a.col}">${a.id}</div><div style="color:var(--ink)"><b>${a.name}</b><small>${a.desc}</small></div></div>`).join('')}</div>
   </div>
@@ -314,13 +318,13 @@ RENDER.inicio = function(){
   $('#goCover').onclick = openCover;
   $('#homeLife').onclick = openLife;
   $('#homeSim').onclick = () => { trTab = 'sim'; show('treino'); };
-  bindBackup();
+  bindBackup(); bindDaily();
   $$('[data-trail]').forEach(b => b.onclick = () => TRAIL[+b.dataset.trail].go());
   const cn = $('#certName'); if (cn) cn.oninput = () => { S.certName = cn.value; save(); $('.cert .nm').textContent = cn.value || 'Seu nome aqui'; };
 };
 
 /* ================= REGRAS ================= */
-const cr = (n, label) => `<button class="cref" data-card="${esc(n)}">${esc(label||n)}</button>`;
+let cr = (n, label) => `<button class="cref" data-card="${esc(n)}">${esc(label||n)}</button>`;
 const MANUAL = [
  {t:'O objetivo do jogo', h:`
   <p>Cada jogador é um planeswalker: um mago que usa seu deck (o <b class="t">grimório</b>) como arsenal. Você começa com <b>20 pontos de vida</b> e <b>7 cards</b> na mão.</p>
@@ -447,11 +451,11 @@ RENDER.regras = function(){
   $('#v-regras').innerHTML = `
    <div class="view-head"><h1>Regras</h1><p>O manual completo, as habilidades com exemplos de cartas reais, o turno interativo e a anatomia de uma carta. Toque em qualquer nome sublinhado para ver a carta.</p></div>
    <div class="seg" role="tablist">
-     ${[['manual','Manual'],['hab','Habilidades'],['turno','O turno'],['anat','Anatomia']].map(([k,l])=>`<button role="tab" data-rt="${k}" aria-selected="${rulesTab===k}">${l}</button>`).join('')}
+     ${[['simples','Primeiros passos'],['manual','Manual'],['hab','Habilidades'],['turno','O turno'],['anat','Anatomia'],['simb','Símbolos']].map(([k,l])=>`<button role="tab" data-rt="${k}" aria-selected="${rulesTab===k}">${l}</button>`).join('')}
    </div>
    <div id="rulesBody"></div>`;
   $$('[data-rt]').forEach(b => b.onclick = () => { rulesTab = b.dataset.rt; RENDER.regras(); });
-  ({manual:renderManual, hab:renderKW, turno:renderTurn, anat:renderAnat})[rulesTab]();
+  ({simples:renderSimple, manual:renderManual, hab:renderKW, turno:renderTurn, anat:renderAnat, simb:renderSymbols})[rulesTab]();
   if (!S.seen['r_'+rulesTab]) { S.seen['r_'+rulesTab] = true; save(); }
 };
 function renderManual(){
@@ -781,10 +785,10 @@ const BASICS = ['plains','island','swamp','mountain','forest','wastes','snow-cov
 RENDER.decks = function(){
   $('#v-decks').innerHTML = `
    <div class="view-head"><h1>Forja de decks</h1><p>Cole sua lista e receba curva de mana, cores, recomendação de terrenos e alertas. Depois teste mãos iniciais e calcule probabilidades.</p></div>
-   <div class="seg" role="tablist">${[['analise','Analisador'],['mao','Mão inicial'],['prob','Probabilidade'],['base','Base de mana'],['sugestoes','Sugestões'],['orcamento','Orçamento'],['comparar','Comparar listas'],['colecao','Minha coleção'],['desejos','Lista de desejos'],['desafios','Desafios'],['famosos','Decks famosos'],['arena','Central do Arena'],['guia','Guia de construção']].map(([k,l])=>`<button role="tab" data-dt="${k}" aria-selected="${deckTab===k}">${l}</button>`).join('')}</div>
+   <div class="seg" role="tablist">${[['entenda','Entenda seu deck'],['analise','Analisador'],['mao','Mão inicial'],['prob','Probabilidade'],['base','Base de mana'],['sugestoes','Sugestões'],['orcamento','Orçamento'],['comparar','Comparar listas'],['colecao','Minha coleção'],['desejos','Lista de desejos'],['desafios','Desafios'],['famosos','Decks famosos'],['arena','Central do Arena'],['guia','Guia de construção']].map(([k,l])=>`<button role="tab" data-dt="${k}" aria-selected="${deckTab===k}">${l}</button>`).join('')}</div>
    <div id="deckBody"></div>`;
   $$('[data-dt]').forEach(b => b.onclick = () => { deckTab = b.dataset.dt; RENDER.decks(); });
-  ({analise:renderAnalyzer, mao:renderHand, prob:renderProb, base:renderManaBase, sugestoes:renderSuggest, colecao:renderColl, desejos:renderWish, orcamento:renderBudget, comparar:renderCompare, desafios:renderChal, famosos:renderFamous, arena:renderArenaHub, guia:renderGuide})[deckTab]();
+  ({entenda:renderEntenda, analise:renderAnalyzer, mao:renderHand, prob:renderProb, base:renderManaBase, sugestoes:renderSuggest, colecao:renderColl, desejos:renderWish, orcamento:renderBudget, comparar:renderCompare, desafios:renderChal, famosos:renderFamous, arena:renderArenaHub, guia:renderGuide})[deckTab]();
 };
 
 function parseDeck(txt){

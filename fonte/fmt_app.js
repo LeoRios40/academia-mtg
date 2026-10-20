@@ -122,6 +122,8 @@ function fCommander(){
         <p><b>Plano:</b> ${c.plan}</p><p><b>Por que começar com ele:</b> ${c.why}</p><p class="muted"><b>Cuidado:</b> ${fmt(c.watch)}</p>
         <div class="acts"><button class="btn small primary" data-usecmd="${esc(c.n)}">Montar com ele</button>${ext(edh(c.n),'EDHREC')}</div></div></div>`).join('')}</div>
 
+  <div style="margin-top:16px">${cmdCompareHTML()}</div>
+
   <div class="sub-h"><h2>Cartas básicas de cada cor</h2><p>Aparecem em milhares de decks de Commander. Confira se continuam fora da lista de banidas antes de usar.</p></div>
   <div class="panel tbl-wrap"><table><tbody>${CMD_STAPLES.map(s=>`<tr><td style="white-space:nowrap">${manaSym(s[0])} <b>${s[1]}</b></td><td>${s[2].split(', ').map(n=>cr(n)).join(', ')}</td></tr>`).join('')}</tbody></table></div>
 
@@ -137,7 +139,7 @@ function fCommander(){
   </div>`;
   $$('[data-cf]').forEach(b => b.onclick = () => { cmdFilter = b.dataset.cf; fCommander(); $('.cmd-grid').scrollIntoView({block:'start'}); });
   $$('[data-usecmd]').forEach(b => b.onclick = () => { const c = COMMANDERS.find(x=>x.n===b.dataset.usecmd); Object.assign(wz, {fmt:'commander', colors:[...c.id.toLowerCase()], cmd:c.n, style:wzStyleFor(c.arch)}); fmtTab='montar'; RENDER.formatos(); setTimeout(()=>{ const r=$('#wzOut'); r && r.scrollIntoView({behavior:'smooth'}); }, 60); });
-  bindGofmt(); drawPlanner();
+  bindGofmt(); drawPlanner(); bindCmdCompare();
 }
 function drawPlanner(){
   const box = $('#planner'); if (!box) return;
