@@ -211,7 +211,7 @@ function show(v){
   if (!VIEWS.includes(v)) v = 'inicio';
   VIEWS.forEach(id => $('#v-'+id).hidden = id !== v);
   const nv = v === 'combate' ? 'treino' : v; $$('.tab').forEach(t => t.getAttribute('data-go') === nv ? t.setAttribute('aria-current','page') : t.removeAttribute('aria-current'));
-  currentView = v; RENDER[v] && RENDER[v]();
+  document.body.dataset.sec = nv; currentView = v; RENDER[v] && RENDER[v]();
   try { history.replaceState(null,'','#'+v); } catch(e){}
   window.scrollTo({top:0});
 }
@@ -778,17 +778,17 @@ function outCalc(user){
 }
 
 /* ================= DECKS ================= */
-let deckTab = 'analise', deckFormat = '60', deckText = SAMPLE_DECK, DECK = null, hand = null;
+let deckTab = 'importar', deckFormat = '60', deckText = SAMPLE_DECK, DECK = null, hand = null;
 const KIND_COL = {creature:'var(--g)',instant:'var(--u)',sorcery:'var(--r)',enchantment:'var(--w)',artifact:'var(--c)',planeswalker:'var(--m)',battle:'var(--b)',land:'var(--muted)',other:'var(--line)',unknown:'var(--line)'};
 const BASICS = ['plains','island','swamp','mountain','forest','wastes','snow-covered plains','snow-covered island','snow-covered swamp','snow-covered mountain','snow-covered forest'];
 
 RENDER.decks = function(){
   $('#v-decks').innerHTML = `
-   <div class="view-head"><h1>Forja de decks</h1><p>Cole sua lista e receba curva de mana, cores, recomendação de terrenos e alertas. Depois teste mãos iniciais e calcule probabilidades.</p></div>
-   <div class="seg" role="tablist">${[['entenda','Entenda seu deck'],['gerar','Gerar deck'],['analise','Analisador'],['mao','Mão inicial'],['prob','Probabilidade'],['base','Base de mana'],['sugestoes','Sugestões'],['orcamento','Orçamento'],['comparar','Comparar listas'],['colecao','Minha coleção'],['desejos','Lista de desejos'],['desafios','Desafios'],['famosos','Decks famosos'],['arena','Central do Arena'],['guia','Guia de construção']].map(([k,l])=>`<button role="tab" data-dt="${k}" aria-selected="${deckTab===k}">${l}</button>`).join('')}</div>
+   <div class="view-head"><h1>Forja de decks</h1><p>Traga seu deck do Arena, de uma planilha ou do papel. Entenda como ele funciona, otimize, gere decks novos e teste mãos iniciais antes da partida.</p></div>
+   <div class="seg seg-g" role="tablist">${[['Seu deck',[['importar','Importar deck'],['entenda','Entenda seu deck'],['gerar','Gerar deck']]],['Analisar',[['analise','Analisador'],['mao','Mão inicial'],['prob','Probabilidade'],['base','Base de mana'],['sugestoes','Sugestões'],['orcamento','Orçamento'],['comparar','Comparar listas']]],['Coleção',[['colecao','Minha coleção'],['desejos','Lista de desejos']]],['Inspiração',[['desafios','Desafios'],['famosos','Decks famosos'],['arena','Central do Arena'],['guia','Guia de construção']]]].map(([g,L])=>`<div class="sg"><span class="sg-l">${g}</span>${L.map(([k,l])=>`<button role="tab" data-dt="${k}" aria-selected="${deckTab===k}">${l}</button>`).join('')}</div>`).join('')}</div>
    <div id="deckBody"></div>`;
   $$('[data-dt]').forEach(b => b.onclick = () => { deckTab = b.dataset.dt; RENDER.decks(); });
-  ({entenda:renderEntenda, gerar:renderGen, analise:renderAnalyzer, mao:renderHand, prob:renderProb, base:renderManaBase, sugestoes:renderSuggest, colecao:renderColl, desejos:renderWish, orcamento:renderBudget, comparar:renderCompare, desafios:renderChal, famosos:renderFamous, arena:renderArenaHub, guia:renderGuide})[deckTab]();
+  ({importar:renderImport, entenda:renderEntenda, gerar:renderGen, analise:renderAnalyzer, mao:renderHand, prob:renderProb, base:renderManaBase, sugestoes:renderSuggest, colecao:renderColl, desejos:renderWish, orcamento:renderBudget, comparar:renderCompare, desafios:renderChal, famosos:renderFamous, arena:renderArenaHub, guia:renderGuide})[deckTab]();
 };
 
 function parseDeck(txt){
@@ -879,7 +879,7 @@ function renderAnalyzer(){
      <div class="panel stack-v">
        <label class="f" for="fmtSel">Formato
          <select id="fmtSel"><option value="60" ${deckFormat==='60'?'selected':''}>Construído (60 cards)</option><option value="40" ${deckFormat==='40'?'selected':''}>Limitado (40 cards)</option><option value="100" ${deckFormat==='100'?'selected':''}>Commander (100 cards)</option></select></label>
-       <label class="f" for="deckTxt">Lista do deck <span style="font-weight:400">Uma carta por linha, como "4 Lightning Bolt". Aceita exportação do Arena e do MTGO, com nomes em inglês.</span>
+       <label class="f" for="deckTxt">Lista do deck <span style="font-weight:400">Uma carta por linha, como "4 Lightning Bolt". Aceita exportação do Arena e do MTGO, em português ou inglês.</span>
          <textarea id="deckTxt" rows="16" spellcheck="false">${esc(deckText)}</textarea></label>
        <div class="row-h"><button class="btn primary" id="btnAnalyze">Analisar deck</button><button class="btn" id="btnSample">Usar exemplo</button><button class="btn" id="btnClear">Limpar</button></div>
        <p class="muted" id="anStatus" style="font-size:.9rem">Cartas fora da base local são buscadas no Scryfall (precisa de internet).</p>
@@ -895,13 +895,13 @@ function renderAnalyzer(){
 }
 async function runAnalyze(){
   const st = m => { const el = $('#anStatus'); if (el) el.textContent = m; };
-  const entries = parseDeck(deckText);
-  if (!entries.length) { st('A lista está vazia. Cole uma carta por linha, por exemplo "4 Lightning Bolt".'); return; }
+  if (!parseImport(deckText).length) { st('A lista está vazia. Cole uma carta por linha, por exemplo "4 Lightning Bolt".'); return; }
   const btn = $('#btnAnalyze'); if (btn) btn.disabled = true;
-  const r = await resolveCards(entries.map(e=>e.name), st);
+  const N = await normalizeDeck(deckText, st); const entries = [...N.C.cmd, ...N.C.comp, ...N.C.main];
+  const r = {offline:N.offline, notFound:N.unknown};
   if (btn) btn.disabled = false;
   DECK = analyze(entries); hand = null;
-  st(r.offline ? 'Sem conexão com o Scryfall: cartas fora da base local ficaram como "desconhecidas".' : r.notFound.length ? `Não encontrei: ${r.notFound.join(', ')}. Confira a grafia (nomes em inglês).` : 'Análise pronta.');
+  st(r.offline ? 'Sem conexão com o Scryfall: cartas fora da base local ficaram como "desconhecidas".' : r.notFound.length ? `Não encontrei: ${r.notFound.join(', ')}. Confira a grafia (português ou inglês).` : 'Análise pronta.');
   if (!S.deck && deckText.trim() !== SAMPLE_DECK.trim()) { S.deck = true; save(); checkAch(); }
   drawAnalysis();
 }

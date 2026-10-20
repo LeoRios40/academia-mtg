@@ -78,13 +78,12 @@ async function entAnalyze(){
   // comandante: seção "Commander" do Arena ou campo preenchido
   let cmd = ent.cmd.trim();
   const lines = raw.split(/\r?\n/); for (let i=0;i<lines.length;i++) if (/^\s*(commander|comandante)\s*$/i.test(lines[i])) { const m = (lines[i+1]||'').match(/^\s*\d*\s*x?\s*(.+?)(\s+\([A-Z0-9]{2,6}\).*)?$/i); if (m && !cmd) cmd = m[1].trim(); }
-  let entries = parseDeck(raw);
-  if (!entries.length) { st('Cole uma lista primeiro, uma carta por linha.'); return; }
+  if (!parseImport(raw).length) { st('Cole uma lista primeiro, uma carta por linha.'); return; }
   st('Buscando as cartas…');
-  const r = await resolveCards(entries.map(e=>e.name), st);
-  // nomes em português (cartas físicas)
-  const miss = entries.filter(e => !cardData(e.name) && !BASICS.includes(e.name.toLowerCase())).map(e=>e.name);
-  if (miss.length && !r.offline) { const pt = await resolvePT(miss.slice(0, 40), st); const en = Object.values(pt); if (en.length) { await resolveCards(en, st); entries = entries.map(e => pt[e.name] ? {...e, name:pt[e.name], pt:e.name} : e); } }
+  const N = await normalizeDeck(raw, st);
+  let entries = [...N.C.cmd, ...N.C.comp, ...N.C.main];
+  if (N.cmd && !ent.cmd.trim()) cmd = N.cmd;
+  else if (cmd) { const pt = PTMAP[fold(cmd)]; if (pt) cmd = pt; }
   if (cmd) { const ce = entries.find(e => e.name.toLowerCase() === cmd.toLowerCase()); if (!ce) { await resolveCards([cmd], st); entries.unshift({name:cmd, q:1}); } }
   const tot = entries.reduce((a,e)=>a+e.q,0);
   const fmt = ent.fmt !== 'auto' ? ent.fmt : tot >= 95 ? '100' : tot <= 45 ? '40' : '60';
@@ -131,7 +130,8 @@ function renderEntenda(){
      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));align-items:start">
        <label class="f" for="entTxt">Lista do deck<textarea id="entTxt" rows="12" spellcheck="false" placeholder="Arena: Decks → Exportar e cole aqui&#10;Físico: 4 Lightning Bolt (ou 4 Relâmpago)">${esc(ent.txt)}</textarea></label>
        <div class="stack-v">
-         <label class="f" for="entFile">Ou envie um arquivo (.txt ou .dek)<input type="file" id="entFile" accept=".txt,.dek,.csv,text/plain"></label>
+         <label class="f" for="entFile">Ou envie um arquivo (Excel, CSV, .txt ou .dek)<input type="file" id="entFile" accept=".xlsx,.xls,.xlsm,.ods,.txt,.dek,.csv,text/plain"></label>
+         <button class="btn small" id="entImp" style="align-self:flex-start">Mais formas de importar (montar carta a carta)</button>
          <label class="f" for="entFmt">Formato<select id="entFmt"><option value="auto">Detectar automaticamente</option><option value="60">Construído (60)</option><option value="100">Commander (100)</option><option value="40">Limitado (40)</option></select></label>
          <label class="f" for="entCmd">Comandante (opcional)<input type="text" id="entCmd" value="${esc(ent.cmd)}" placeholder="Detecto sozinho se a lista vier do Arena"></label>
          <div class="tip" style="font-size:.88rem"><b>Cartas físicas em português:</b> pode digitar os nomes em português. Eu procuro a carta equivalente em inglês no Scryfall. Se algum nome não for encontrado, confira a grafia.</div>
@@ -145,7 +145,8 @@ function renderEntenda(){
   $('#entCmd').oninput = e => ent.cmd = e.target.value;
   $('#entFmt').onchange = e => ent.fmt = e.target.value;
   $('#entUse').onclick = () => { ent.txt = deckText; $('#entTxt').value = ent.txt; };
-  $('#entFile').onchange = e => { const f = e.target.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => { ent.txt = String(rd.result).replace(/^﻿/, ''); if (/\.csv$/i.test(f.name)) ent.txt = ent.txt.split(/\r?\n/).map(l => { const c = l.split(/[;,]/); return /^\d+$/.test((c[0]||'').trim()) ? `${c[0].trim()} ${(c[1]||'').replace(/"/g,'').trim()}` : l; }).join('\n'); $('#entTxt').value = ent.txt; toast('Arquivo carregado. Toque em Analisar.'); }; rd.readAsText(f); };
+  $('#entImp').onclick = () => { deckTab = 'importar'; imp.mode = 'montar'; RENDER.decks(); };
+  $('#entFile').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { const r = await readImportFile(f); let E; if (r.rows) { E = []; rowsToEntries(r.rows, E); E = group(E); } else E = parseImport(r.text, true); ent.txt = arenaText(canonList(E)).replace(/^Deck\n/, ''); if (/^Commander/.test(ent.txt)) ent.txt = arenaText(canonList(E)); $('#entTxt').value = ent.txt; toast('Arquivo carregado. Toque em Analisar.'); } catch(err) { toast('Não consegui ler o arquivo. Para Excel é preciso internet; sem conexão, salve como CSV.'); } };
   $('#entGo').onclick = async () => { $('#entGo').disabled = true; try { await entAnalyze(); } finally { const b = $('#entGo'); if (b) b.disabled = false; } };
   if (ent.A) drawEnt();
 }
