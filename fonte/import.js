@@ -315,7 +315,7 @@ function impResultHTML(){
       ${unk.map(e => { const i = imp.E.indexOf(e); return `<div class="row-h fix"><span class="bq">${e.q}×</span><input type="text" value="${esc(e.name)}" data-fixv="${i}" aria-label="Nome da carta"><button class="btn small" data-fix="${i}">Procurar</button><button class="btn small" data-fixx="${i}">Remover</button></div>`; }).join('')}</div>` : ''}
     <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));align-items:start">
       <div class="stack-v"><span class="eyebrow">Lista para importar no MTG Arena</span><pre class="code" id="impOutTxt">${esc(arenaText(C))}</pre>
-        <div class="row-h"><button class="btn primary" id="impCopy">Copiar para o Arena</button><button class="btn" id="impCsv">Baixar planilha</button></div>
+        <div class="row-h"><button class="btn primary" id="impCopy">Copiar para o Arena</button><button class="btn" id="impCsv">Baixar planilha</button><button class="btn" id="impSave">Salvar em Meus decks</button></div>
         <p class="muted" style="font-size:.85rem">No Arena: <b>Decks → Importar</b>. Os nomes vão em inglês, que o Arena aceita em qualquer idioma.</p>
         <span class="eyebrow" style="margin-top:6px">O que fazer agora</span>
         <div class="next-grid">
@@ -324,6 +324,7 @@ function impResultHTML(){
           <button class="next" data-imgo="analise"><b>Analisador</b><small>Curva de mana, cores e terrenos</small></button>
           <button class="next" data-imgo="mao"><b>Testar mãos iniciais</b><small>Compre 7 e decida o mulligan</small></button>
           <button class="next" data-imgo="sim"><b>Simular partidas</b><small>Veja em que turno o deck costuma vencer</small></button>
+          <button class="next" data-imgo="duelo"><b>Jogar contra o computador</b><small>Teste o deck no duelo</small></button>
         </div></div>
       <div class="stack-v"><span class="eyebrow">Como o deck fica</span>${deckGallery([...C.cmd, ...C.comp, ...C.main].filter(e => all.includes(e)), C.cmd[0] && C.cmd[0].name)}</div>
     </div></div>`;
@@ -340,12 +341,14 @@ function sendImported(){
 function bindImpResult(){
   const C = canonList(imp.E);
   const cp = $('#impCopy'); if (cp) cp.onclick = () => copyText(arenaText(C), $('#impOutTxt'));
+  const sv = $('#impSave'); if (sv) sv.onclick = () => { const cmd = C.cmd[0] ? C.cmd[0].name : ''; openSaveDialog(arenaText(C), {cmd, name: imp.shared || '', label:'Importado'}); };
   const cv = $('#impCsv'); if (cv) cv.onclick = () => downloadFile('meu_deck.csv', sheetCSV(C), 'text/csv;charset=utf-8');
   $$('[data-fix]').forEach(b => b.onclick = async () => { const i = +b.dataset.fix; const v = $(`[data-fixv="${i}"]`).value.trim(); if (!v) return; const e = imp.E[i]; e.name = v; e.set = ''; e.cn = ''; b.disabled = true; await resolveImport([e], impSt); impSt(e.en ? `Encontrei: ${e.en}.` : `Ainda não encontrei "${v}". Confira a grafia.`); $('#impRes').innerHTML = impResultHTML(); bindImpResult(); });
   $$('[data-fixx]').forEach(b => b.onclick = () => { imp.E.splice(+b.dataset.fixx, 1); $('#impRes').innerHTML = impResultHTML(); bindImpResult(); });
   $$('[data-imgo]').forEach(b => b.onclick = () => {
     const go = b.dataset.imgo; sendImported();
     if (go === 'sim') { simSel = 'mine'; trTab = 'sim'; show('treino'); return; }
+    if (go === 'duelo') { playDuelWith([...C.cmd, ...C.main]); return; }
     if (go === 'otimizar') { ow.step = 1; ow.sugg = null; opt.res = null; deckTab = 'otimizar'; RENDER.decks(); const st = $('#owSt'); if (st) st.textContent = 'Lendo o deck…'; entAnalyze().then(() => { if (deckTab === 'otimizar') { ow.step = ent.A ? 2 : 1; renderOptFlow(); } }); window.scrollTo({top:0}); return; }
     deckTab = go; RENDER.decks();
     if (go === 'entenda') entAnalyze();

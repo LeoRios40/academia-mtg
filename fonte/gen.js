@@ -124,7 +124,7 @@ async function optimizeDeck(st){
     if (synNames.has(n)) s += 2; if (A.tribe && new RegExp(A.tribe[0].replace(/s$/,''),'i').test(d.t||'')) s += 1.5;
     if (q >= 3) s += 1; if (roles.length) s += .8; if (/\bvoar\b|flying|ameaçar|menace|atropelar|trample/i.test(d.x||'') && d.k==='creature') s += .4;
     if (arch === 'Aggro' && d.cmc >= 5) s -= 1.5; if (arch === 'Aggro' && d.k==='creature' && d.cmc <= 2) s += .8;
-    if (!isNew) s += 1.5; return s; };
+    if (!isNew) s += 1.5; else if (typeof owned === 'function' && preferOwned() && owned(n)) s += 1.4; return s; };
   entries.forEach(e => {
     if (e.k === 'land' || BASICS.includes(e.name.toLowerCase())) return;
     if (big && e.name === A.cmd) return;

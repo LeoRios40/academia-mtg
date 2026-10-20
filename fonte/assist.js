@@ -118,6 +118,7 @@ async function asGenerate(st){
     if (L.length < Math.ceil(n / copies)) L = L.concat(await fetchQ(`${q} ${F.cmd ? 'id<=' : 'c<='}${asd.choice.cols.toLowerCase()} ${F.q}${F.arena ? ' game:arena' : ''} -t:land`, 60));
     const start = asd.vari ? (asd.vari * 2) % Math.max(1, L.length - Math.ceil(n / copies)) : 0;
     const LL = L.slice(start).concat(L.slice(0, start));
+    if (preferOwned()) LL.sort((x,y) => (owned(y) ? 1 : 0) - (owned(x) ? 1 : 0));
     let got = 0;
     for (const name of LL) { if (got >= n) break; if (used.has(name)) continue; const k = Math.min(copies, n - got); used.add(name); out.push({name, q:k}); roleOf[name] = r; got += k; count += k; }
   }
@@ -189,7 +190,7 @@ function asS4(){
 }
 function wildcards(list){
   const w = {mythic:0, rare:0, uncommon:0, common:0};
-  list.forEach(e => { if (BASICS.includes(e.name.toLowerCase())) return; const L = LEG[e.name]; if (L && w[L.r] != null) w[L.r] += e.q; });
+  list.forEach(e => { if (BASICS.includes(e.name.toLowerCase())) return; const L = LEG[e.name]; const need = Math.max(0, e.q - owned(e.name)); if (L && w[L.r] != null) w[L.r] += need; });
   return w;
 }
 function asS5(){
@@ -197,7 +198,7 @@ function asS5(){
   const real = {}; r.list.forEach(e => { const k = e.name === r.cmd ? 'cmd' : r.roleOf[e.name] || 'theme'; real[k] = (real[k]||0) + e.q; });
   const comp = `<table class="as-tab"><thead><tr><th>Função</th><th class="num">Meta</th><th class="num">No deck</th></tr></thead><tbody>${Object.entries(asd.plan.roles).map(([k,n]) => `<tr><td>${ROLE_PT[k]||k}</td><td class="num">${n}</td><td class="num">${real[k]||0}</td></tr>`).join('')}<tr><td>Terrenos</td><td class="num">${asd.plan.lands}</td><td class="num">${real.lands||0}</td></tr></tbody></table>`;
   const w = wildcards(r.list);
-  const wc = F.arena ? `<div class="as-wc"><span class="muted">Curingas no Arena, se você não tiver nenhuma das cartas:</span><div class="row-h">${[['mythic','Míticas'],['rare','Raras'],['uncommon','Incomuns'],['common','Comuns']].map(([k,l]) => `<span class="wc wc-${k}"><b>${w[k]}</b> ${l}</span>`).join('')}</div></div>` : '';
+  const wc = F.arena ? `<div class="as-wc"><span class="muted">${S.acoll && Object.keys(S.acoll).length ? 'Curingas que faltam, descontando a sua coleção do Arena:' : 'Curingas no Arena, se você não tiver nenhuma das cartas (cadastre sua coleção em Arena e coleção):'}</span><div class="row-h">${[['mythic','Míticas'],['rare','Raras'],['uncommon','Incomuns'],['common','Comuns']].map(([k,l]) => `<span class="wc wc-${k}"><b>${w[k]}</b> ${l}</span>`).join('')}</div></div>` : '';
   const extra = `<p class="muted" style="font-size:.9rem">${F.n} · ${AS_ARCH[asd.choice.arch].n} ${asColName(asd.choice.cols)}. Cartas escolhidas entre as mais jogadas para cada função (dados do Scryfall/EDHREC)${F.arena ? ', só as que existem no Arena' : ''}. É um ponto de partida: jogue, observe e ajuste.</p>${wc}<div class="row-h"><button class="btn" id="asTxt">Baixar lista (.txt)</button><button class="btn" id="asCsv">Baixar planilha</button><button class="btn" id="asImprove">Melhorar este deck</button><button class="btn" id="asVar">Gerar outra variação</button><button class="btn" data-ass2="2">Mudar as respostas</button></div><details><summary>Composição do deck: meta e o que entrou</summary>${comp}</details>`;
   return resultHTML('asRes', `Seu deck · ${r.list.reduce((a,e)=>a+e.q,0)} cartas`, r.list, r.cmd, extra)
 ;

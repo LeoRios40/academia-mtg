@@ -3,7 +3,7 @@
 O site publicado é o `index.html` da raiz. Ele é gerado juntando estes arquivos:
 
 1. `part7.html`: cabeçalho, estilos (CSS) e estrutura da página.
-2. Scripts, nesta ordem: `data.js`, `fmt_data.js`, `app.js`, `fmt_app.js`, `decks2.js`, `sim.js`, `sim2.js`, `treino.js`, `extras.js`, `game2.js`, `mods.js`, `entenda.js, gen.js, import.js, optflow.js, assist.js`, `mods3.js`, `versions.js`, `ui.js`, `cover.js`, `init.js`.
+2. Scripts, nesta ordem: `data.js`, `fmt_data.js`, `app.js`, `fmt_app.js`, `decks2.js`, `sim.js`, `sim2.js`, `treino.js`, `extras.js`, `game2.js`, `mods.js`, `entenda.js, gen.js, import.js, optflow.js, assist.js, library.js`, `mods3.js`, `versions.js`, `ui.js`, `cover.js`, `init.js`.
 
 O conjunto é convertido e compactado com esbuild (alvo chrome61/safari12, `--minify`) e colocado numa única tag `<script>` no fim do `part7.html`. O passo a passo está em `build.sh`. No `index.html` publicado entram ainda as tags `theme-color` e `apple-touch-icon` no cabeçalho.
 

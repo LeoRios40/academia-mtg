@@ -97,7 +97,7 @@ function owFinal(){
   }
   return {list, cmd, tot, target, note};
 }
-function owCard(n, q, tone){ return `<div class="ow-c ${tone}">${cardHTML(n, {showPt:false})}<span class="gal-q">${q}×</span></div>`; }
+function owCard(n, q, tone){ return `<div class="ow-c ${tone}">${cardHTML(n, {showPt:false})}<span class="gal-q">${q}×</span>${tone === 'in' && owned(n) ? '<span class="own">Você tem</span>' : ''}</div>`; }
 function owStep3(){
   if (!ow.sugg) owBuild();
   const S2 = ow.sugg; const accN = S2.filter(s => ow.acc[s.id]).length;

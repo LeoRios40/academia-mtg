@@ -2,7 +2,8 @@
 (function(){ try { if (S.lite === undefined && navigator.deviceMemory && navigator.deviceMemory <= 4) { S.lite = true; S.liteAuto = true; save(); } } catch(e){} })();
 applyPrefs(); applyTheme(); paintSound(); applyFoil();
 const startHash = (location.hash||'').slice(1);
-if (startHash.indexOf('pz-') === 0) { try { const p = b64d(startHash.slice(3)); customPuz = {p, ans:null}; trTab = 'custom'; show('treino'); } catch(e) { show('inicio'); } }
+if (startHash.indexOf('deck=') === 0) { show('inicio'); openSharedDeck(startHash); }
+else if (startHash.indexOf('pz-') === 0) { try { const p = b64d(startHash.slice(3)); customPuz = {p, ans:null}; trTab = 'custom'; show('treino'); } catch(e) { show('inicio'); } }
 else { show(startHash || 'inicio'); if (!startHash) buildCover(); else maybeShowUpdates(); }
 checkAch();
 if (S.liteAuto && !S.liteTold) { S.liteTold = true; save(); setTimeout(() => toast('Modo leve ativado para este aparelho. Mude em Ajustes (engrenagem).'), 2500); }
