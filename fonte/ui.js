@@ -47,6 +47,8 @@ const FEATS = [
  ['O turno','As fases e etapas de um turno','turno fases etapas',goR('turno')],
  ['Anatomia da carta','O que cada parte da carta significa','anatomia carta partes',goR('anat')],
  ['Entenda seu deck','Importe do Arena ou do deck físico: funções, sinergias, combos e dicas','entenda analisar deck combos sinergia importar arena físico',goD('entenda')],
+ ['Gerar deck para o Arena','Responda perguntas e receba um deck pronto para importar','gerar deck criar sugerir arena importar lista',goD('gerar')],
+ ['Otimizar meu deck','Versão melhorada do seu deck, pronta para o Arena','otimizar melhorar deck arena',goD('entenda')],
  ['Campanha','Sete capítulos contra o computador','campanha história capítulos',()=>{ duelSetup.mode='camp'; G=null; trTab='duelo'; show('treino'); }],
  ['Dois jogadores no mesmo aparelho','Ensine alguém jogando no mesmo celular','dois jogadores mesmo aparelho ensinar hotseat',()=>{ duelSetup.mode='pvp'; G=null; trTab='duelo'; show('treino'); }],
  ['Criar quebra-cabeça','Monte e compartilhe por link','criar quebra cabeça compartilhar link',goT('criar')],

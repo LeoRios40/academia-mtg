@@ -785,10 +785,10 @@ const BASICS = ['plains','island','swamp','mountain','forest','wastes','snow-cov
 RENDER.decks = function(){
   $('#v-decks').innerHTML = `
    <div class="view-head"><h1>Forja de decks</h1><p>Cole sua lista e receba curva de mana, cores, recomendação de terrenos e alertas. Depois teste mãos iniciais e calcule probabilidades.</p></div>
-   <div class="seg" role="tablist">${[['entenda','Entenda seu deck'],['analise','Analisador'],['mao','Mão inicial'],['prob','Probabilidade'],['base','Base de mana'],['sugestoes','Sugestões'],['orcamento','Orçamento'],['comparar','Comparar listas'],['colecao','Minha coleção'],['desejos','Lista de desejos'],['desafios','Desafios'],['famosos','Decks famosos'],['arena','Central do Arena'],['guia','Guia de construção']].map(([k,l])=>`<button role="tab" data-dt="${k}" aria-selected="${deckTab===k}">${l}</button>`).join('')}</div>
+   <div class="seg" role="tablist">${[['entenda','Entenda seu deck'],['gerar','Gerar deck'],['analise','Analisador'],['mao','Mão inicial'],['prob','Probabilidade'],['base','Base de mana'],['sugestoes','Sugestões'],['orcamento','Orçamento'],['comparar','Comparar listas'],['colecao','Minha coleção'],['desejos','Lista de desejos'],['desafios','Desafios'],['famosos','Decks famosos'],['arena','Central do Arena'],['guia','Guia de construção']].map(([k,l])=>`<button role="tab" data-dt="${k}" aria-selected="${deckTab===k}">${l}</button>`).join('')}</div>
    <div id="deckBody"></div>`;
   $$('[data-dt]').forEach(b => b.onclick = () => { deckTab = b.dataset.dt; RENDER.decks(); });
-  ({entenda:renderEntenda, analise:renderAnalyzer, mao:renderHand, prob:renderProb, base:renderManaBase, sugestoes:renderSuggest, colecao:renderColl, desejos:renderWish, orcamento:renderBudget, comparar:renderCompare, desafios:renderChal, famosos:renderFamous, arena:renderArenaHub, guia:renderGuide})[deckTab]();
+  ({entenda:renderEntenda, gerar:renderGen, analise:renderAnalyzer, mao:renderHand, prob:renderProb, base:renderManaBase, sugestoes:renderSuggest, colecao:renderColl, desejos:renderWish, orcamento:renderBudget, comparar:renderCompare, desafios:renderChal, famosos:renderFamous, arena:renderArenaHub, guia:renderGuide})[deckTab]();
 };
 
 function parseDeck(txt){

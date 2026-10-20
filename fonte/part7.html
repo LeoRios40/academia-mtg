@@ -713,6 +713,12 @@ p,li,td{overflow-wrap:break-word}
 .brand-mark{filter:drop-shadow(0 0 6px color-mix(in srgb,var(--accent) 40%,transparent))}
 .top{border-bottom-color:color-mix(in srgb,var(--accent) 22%,var(--line))}
 /* atualizações */
+.gal-group{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.gal{display:flex;flex-wrap:wrap;gap:10px}
+.gal-i{position:relative}
+.gal-i .mcard{--cw:clamp(78px,20vw,104px)}
+.gal-q{position:absolute;left:-6px;top:-6px;z-index:5;background:var(--accent);color:var(--accent-ink);font-family:var(--f-mono);font-weight:700;font-size:.8rem;border-radius:999px;padding:2px 8px;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.dlist2{margin:8px 0 0;padding-left:1.1em;display:flex;flex-direction:column;gap:4px;font-size:.92rem}
 .foot-link{border:0;background:none;padding:0;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-size:inherit}
 .ver-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
 .ver-list>li{border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--surface)}
@@ -769,7 +775,7 @@ p,li,td{overflow-wrap:break-word}
 </main>
 
 <footer class="foot">
-  <span>Criado por Leonardo Rios para ajudar no aprendizado de Magic. <button class="foot-link" onclick="openUpdates(false)">Atualizações (versão <span id="verFoot">2.1</span>)</button></span>
+  <span>Criado por Leonardo Rios para ajudar no aprendizado de Magic. <button class="foot-link" onclick="openUpdates(false)">Atualizações (versão <span id="verFoot">2.2</span>)</button></span>
   <span>Imagens das cartas: Scryfall. Magic: The Gathering © Wizards of the Coast. Projeto educativo, sem fins comerciais.</span>
 </footer>
 

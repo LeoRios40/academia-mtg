@@ -111,7 +111,7 @@ async function entAnalyze(){
   const have = new Set(entries.map(e => e.name.toLowerCase()));
   A.combos = COMBOS.filter(c => c[0].every(n => have.has(n.toLowerCase())));
   A.almost = COMBOS.filter(c => c[0].filter(n => have.has(n.toLowerCase())).length === c[0].length - 1 && c[0].length >= 2).slice(0, 6);
-  ent.A = A; ent.spell = null; st('Análise pronta.');
+  ent.A = A; ent.spell = null; opt.res = null; opt.fmt = null; st('Análise pronta.');
   if (!S.entDone) { S.entDone = true; addXP(40); save(); checkAch(); }
   drawEnt();
   // combos do Commander Spellbook (se a internet permitir)
@@ -199,9 +199,11 @@ function drawEnt(){
      <li><div><h3>Como vencer</h3><p>${A.combos.length?`Seu deck tem combo: ${A.combos[0][0].join(' + ')}. Busque as peças e proteja-as.`:R.entries.filter(e=>e.k==='creature' && e.d && e.d.cmc>=5).length?`Suas ameaças grandes, como ${R.entries.filter(e=>e.k==='creature' && e.d && e.d.cmc>=5).slice(0,2).map(e=>e.name).join(' e ')}, fecham o jogo.`:'Vence pela pressão constante: mantenha o oponente reagindo.'}</p></div></li>
    </ol>
    ${tips.length?`<div class="sub-h"><h2>Pontos de atenção</h2></div><div class="panel"><ul class="checks">${tips.map(t=>`<li><span class="pill warn">dica</span><span>${t}</span></li>`).join('')}</ul></div>`:''}
-   <div class="row-h" style="margin-top:14px"><button class="btn" id="entToAn">Abrir no Analisador</button><button class="btn" id="entToSim">Simular este deck</button><button class="btn" id="entToArena">Levar ao Arena</button></div>`;
+   <div class="row-h" style="margin-top:14px"><button class="btn" id="entToAn">Abrir no Analisador</button><button class="btn" id="entToSim">Simular este deck</button><button class="btn" id="entToArena">Levar ao Arena</button></div>
+   ${optPanelHTML()}`;
   const send = () => { deckText = ent.txt; deckFormat = A.fmt === '100' ? '100' : A.fmt === '40' ? '40' : '60'; DECK = null; hand = null; };
   $('#entToAn').onclick = () => { send(); deckTab = 'analise'; RENDER.decks(); };
   $('#entToSim').onclick = () => { send(); simSel = 'mine'; trTab = 'sim'; show('treino'); };
   $('#entToArena').onclick = () => { send(); deckTab = 'arena'; RENDER.decks(); };
+  bindOpt();
 }
