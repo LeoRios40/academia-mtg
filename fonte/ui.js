@@ -139,9 +139,9 @@ const TOUR = [
  {v:'decks', s:'#v-decks .seg', t:'Analisar', d:'Curva de mana, cores, terrenos, mãos iniciais, probabilidades e sugestões de cartas.'},
  {v:'meus', s:'#v-meus .deckbar', t:'Meus decks', d:'Seus decks guardados com versões. A barra "Deck em uso" mostra qual deck as ferramentas estão usando. Aqui também ficam importar, compartilhar por link, imprimir proxies e preço em reais.'},
  {v:'arena', s:'#v-arena .seg', t:'Arena e coleção', d:'Guia do MTG Arena, sua coleção do Arena (o gerador prefere suas cartas), decks famosos, coleção física e lista de desejos.'},
- {v:'inicio', s:'#btnSearch', t:'Busca', d:'Não lembra onde fica algo? Toque na lupa e digite: "vida", "simulador", "comandante"… No PC, o atalho é Ctrl + K.'},
+ {v:'inicio', s:'.gsearch', t:'Busca', d:'Não lembra onde fica algo? Digite na barra de pesquisa: "vida", "simulador", "comandante", uma regra ou o nome de uma carta. Ela entende palavras parecidas e erros de digitação. No PC, o atalho é Ctrl + K.'},
  {v:'inicio', s:'#btnSet', t:'Ajustes', d:'Aumente a letra, ative o alto contraste ou o modo leve (para celulares mais simples), troque o tema e os sons.'},
- {v:'inicio', s:'#btnTour', t:'Pronto!', d:'O tour fica sempre aqui. Boa jornada, planeswalker!'}
+ {v:'inicio', s:'#btnTour', t:'Pronto!', d:'O tour fica sempre aqui. Quer conhecer cada ferramenta? Escolha o tour completo. Em cada área há também o botão "Explicar esta área". Boa jornada, planeswalker!'}
 ];
 let tourI = 0;
 function startTour(){ tourI = 0; drawTour(); }

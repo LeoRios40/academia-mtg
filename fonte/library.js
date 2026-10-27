@@ -7,7 +7,7 @@ const SECTIONS = {
   decks:{kind:'deck', h:'Analisar', p:'Os números do seu deck: curva de mana, cores, terrenos, chance de comprar cada carta, mãos iniciais e sugestões.',
     tabs:[['analise','Analisador'],['mao','Mão inicial'],['prob','Probabilidade'],['base','Base de mana'],['sugestoes','Sugestões de cartas'],['comparar','Comparar listas']]},
   meus:{kind:'deck', h:'Meus decks', p:'Seus decks guardados com todas as versões. Importe, compartilhe por link, imprima proxies para testar e veja quanto custa em reais.',
-    tabs:[['biblioteca','Meus decks'],['importar','Importar deck'],['link','Compartilhar por link'],['proxies','Imprimir proxies'],['preco','Preço em reais']]},
+    tabs:[['biblioteca','Meus decks'],['importar','Importar deck'],['preco','Orçamento das cartas físicas'],['link','Compartilhar por link'],['proxies','Imprimir proxies']]},
   arena:{kind:'deck', h:'Arena e coleção', p:'Tudo do MTG Arena e das suas cartas: guia do Arena, coleção do Arena usada pelo gerador, decks famosos, coleção física e lista de desejos.',
     tabs:[['arena','Central do Arena'],['acoll','Coleção do Arena'],['famosos','Decks famosos'],['colecao','Coleção física'],['desejos','Lista de desejos']]},
   treino:{kind:'tr', h:'Treino', p:'Pratique como os veteranos: jogue contra o computador, simule decks, resolva quebra-cabeças e treine bloqueios, mulligan, pilha e Draft.',
@@ -29,6 +29,7 @@ function renderSection(v){
   lastTab[v] = tab;
   Object.keys(SECTIONS).forEach(o => { if (o !== v && SECTIONS[o].kind === D.kind) { const el = $('#v-' + o); if (el) el.innerHTML = ''; } });
   const bodyId = deck ? 'deckBody' : 'trBody';
+  setTimeout(() => typeof addAreaTour === 'function' && addAreaTour(v), 0);
   $('#v-' + v).innerHTML = `<div class="view-head"><h1>${D.h}</h1><p>${D.p}</p></div>
     ${deck && v !== 'arena' ? deckBarHTML() : ''}
     <div class="seg seg-wrap" role="tablist">${D.tabs.map(([k,l]) => `<button role="tab" data-${deck ? 'dt' : 'tt'}="${k}" aria-selected="${tab===k}">${l}</button>`).join('')}</div>
@@ -257,32 +258,50 @@ async function getFx(){
   return S.fx || 5.5;
 }
 const ligaURL = n => `https://www.ligamagic.com.br/?view=cards/card&card=${encodeURIComponent(n)}`;
+let prc = {rows:null, src:'', name:''};
 function renderPrice(){
   const L = libAll(), n = deckCount(deckText); if (S.fx == null) S.fx = 5.5;
-  $('#deckBody').innerHTML = `<div class="panel stack-v"><h3>Preço em reais</h3>
-    <p class="muted" style="margin:0">Estimativa do custo do deck físico: preço médio em dólar (Scryfall, lojas americanas) convertido pela cotação do dia. No Brasil os preços variam: use o link da LigaMagic em cada carta para ver as lojas daqui.</p>
+  $('#deckBody').innerHTML = `<div class="panel stack-v"><h3>Preço e lista de compras</h3>
+    <p class="muted" style="margin:0">Quer montar no papel o deck que você joga no Arena? Aqui você vê quanto custam as cartas físicas, marca as que já tem e leva a lista de compras pronta. O preço é uma estimativa: média em dólar (Scryfall, lojas americanas) convertida pela cotação do dia. Use o link da LigaMagic em cada carta para ver as lojas do Brasil.</p>
     <div class="grid g2"><label class="f" for="prSel">Qual deck?<select id="prSel">${n ? `<option value="__cur">Deck em uso (${n} cartas)</option>` : ''}${L.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join('')}</select></label>
     <label class="f" for="fx">Cotação do dólar (R$)<input type="number" id="fx" step="0.01" min="1" value="${S.fx}"></label></div>
-    <div class="row-h"><button class="btn primary" id="prGo" ${n || L.length ? '' : 'disabled'}>Calcular o preço</button></div>
+    <label class="row-h" style="gap:8px"><input type="checkbox" id="prOwn" ${S.prOwn !== false ? 'checked' : ''}> Descontar as cartas da minha coleção física (Arena e coleção → Coleção física)</label>
+    <div class="row-h"><button class="btn primary" id="prGo" ${n || L.length ? '' : 'disabled'}>Calcular o orçamento</button></div>
     <p class="muted" id="prSt" style="font-size:.9rem"></p><div id="prOut"></div></div>`;
-  $('#fx').onchange = e => { S.fx = +e.target.value || 5.5; save(); };
+  $('#fx').onchange = e => { S.fx = +e.target.value || 5.5; save(); if (prc.rows) drawPrice(); };
+  $('#prOwn').onchange = e => { S.prOwn = e.target.checked; save(); if (prc.rows) { applyOwn(); drawPrice(); } };
   $('#prGo').onclick = async () => {
     const st = m => $('#prSt').textContent = m; const v = $('#prSel').value;
-    const text = v === '__cur' || !v ? deckText : (D => D.versions[D.versions.length-1].text)(L.find(d => d.id === v));
-    st('Conferindo a cotação do dólar…'); const fx = await getFx(); $('#fx').value = S.fx;
+    const D = v && v !== '__cur' ? L.find(d => d.id === v) : null;
+    const text = D ? D.versions[D.versions.length-1].text : deckText; prc.name = D ? D.name : (curDeck() ? curDeck().name : 'meu deck');
+    st('Conferindo a cotação do dólar…'); await getFx(); $('#fx').value = S.fx;
     const N = await normalizeDeck(text, st); const list = [...N.C.cmd, ...N.C.comp, ...N.C.main, ...N.C.side];
     try { await fetchMeta(list.map(e => e.name), st); } catch(e) { st('Sem conexão com o Scryfall agora. Tente de novo mais tarde.'); return; }
-    const rows = list.map(e => { const m = metaOf(e.name); return {n:e.name, q:e.q, u: m ? m.usd : null, b: BASICS.includes(e.name.toLowerCase())}; }).sort((a,b) => (b.u||0)*b.q - (a.u||0)*a.q);
-    const tot = rows.reduce((a,r) => a + (r.u||0) * r.q, 0);
-    const R$ = x => (x * S.fx).toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
-    const exp = rows.filter(r => r.u && r.u * S.fx >= 50);
-    st(`Cotação usada: R$ ${S.fx.toFixed(2)} por dólar${fxLive ? ' (de hoje)' : ''}.`);
-    $('#prOut').innerHTML = `<div class="tiles"><div class="stat"><div class="k">Deck completo</div><div class="v">${R$(tot)}</div></div><div class="stat"><div class="k">Cartas acima de R$ 50</div><div class="v">${exp.length}</div></div><div class="stat"><div class="k">Sem as 5 mais caras</div><div class="v">${R$(tot - rows.slice(0,5).reduce((a,r)=>a+(r.u||0)*r.q,0))}</div></div></div>
-      <div class="tbl-wrap" style="margin-top:12px"><table><thead><tr><th>Carta</th><th class="n">Qtd.</th><th class="n">Unid.</th><th class="n">Total</th><th>Lojas no Brasil</th></tr></thead><tbody>
-      ${rows.filter(r => !r.b).map(r => `<tr><td>${cr(r.n)}</td><td class="n">${r.q}</td><td class="n">${r.u ? R$(r.u) : '—'}</td><td class="n">${r.u ? R$(r.u * r.q) : '—'}</td><td><a class="ext" href="${ligaURL(r.n)}" target="_blank" rel="noopener">LigaMagic ↗</a></td></tr>`).join('')}
-      </tbody></table></div>
-      <p class="muted" style="font-size:.85rem">Terrenos básicos não entram na conta. Para um deck mais barato, use "Melhorar meu deck" escolhendo "Só comuns e incomuns".</p>`;
+    const ptOfName = {}; [...N.C.cmd, ...N.C.comp, ...N.C.main, ...N.C.side].forEach(e => { if (e.pt) ptOfName[e.name] = e.pt; });
+    prc.rows = list.filter(e => !BASICS.includes(e.name.toLowerCase())).map(e => { const m = metaOf(e.name); return {n:e.name, pt: ptOfName[e.name] || (typeof ptOf === 'function' ? ptOf(e.name) : ''), q:e.q, u: m ? m.usd : null, have:0}; }).sort((a,b) => (b.u||0)*b.q - (a.u||0)*a.q);
+    applyOwn();
+    st(`Cotação usada: R$ ${(+S.fx).toFixed(2)} por dólar${fxLive ? ' (de hoje)' : ''}.${N.unknown.length ? ' Não reconhecidas: ' + N.unknown.join(', ') : ''}`);
+    drawPrice(); if (!S.prDone) { S.prDone = true; addXP(15); save(); }
   };
+}
+function applyOwn(){
+  const own = new Map(); if (S.prOwn !== false && S.coll) parseDeck(S.coll).forEach(e => own.set(e.name.toLowerCase(), e.q));
+  prc.rows.forEach(r => { r.have = Math.min(r.q, own.get(r.n.toLowerCase()) || (r.pt && own.get(r.pt.toLowerCase())) || 0); });
+}
+function drawPrice(){
+  const R$ = x => (x * S.fx).toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+  const rows = prc.rows; const tot = rows.reduce((a,r) => a + (r.u||0) * r.q, 0); const buy = rows.reduce((a,r) => a + (r.u||0) * (r.q - r.have), 0);
+  const nBuy = rows.reduce((a,r) => a + r.q - r.have, 0);
+  $('#prOut').innerHTML = `<div class="tiles"><div class="stat"><div class="k">Deck completo</div><div class="v">${R$(tot)}</div></div><div class="stat"><div class="k">Falta comprar</div><div class="v">${R$(buy)}</div></div><div class="stat"><div class="k">Cartas para comprar</div><div class="v">${nBuy}</div></div></div>
+    <div class="row-h" style="margin-top:12px"><button class="btn primary" id="prCopy">Copiar lista de compras</button><button class="btn" id="prCsv">Baixar lista de compras (planilha)</button><a class="btn" href="https://www.ligamagic.com.br/" target="_blank" rel="noopener">Abrir a LigaMagic ↗</a></div>
+    <div class="tbl-wrap" style="margin-top:12px"><table class="pr-tab"><thead><tr><th>Carta</th><th class="n">No deck</th><th class="n">Já tenho</th><th class="n">Unid.</th><th class="n">Falta (R$)</th><th>Lojas</th></tr></thead><tbody>
+    ${rows.map((r,i) => `<tr class="${r.have >= r.q ? 'got' : ''}"><td>${cr(r.n)}${r.pt && nrm(r.pt) !== nrm(r.n) ? `<br><small class="muted">${esc(r.pt)}</small>` : ''}</td><td class="n">${r.q}</td><td class="n"><input type="number" min="0" max="${r.q}" value="${r.have}" data-ph="${i}" aria-label="Quantas ${esc(r.n)} você já tem"></td><td class="n">${r.u ? R$(r.u) : '—'}</td><td class="n">${r.u ? R$(r.u * (r.q - r.have)) : '—'}</td><td><a class="ext" href="${ligaURL(r.n)}" target="_blank" rel="noopener">LigaMagic ↗</a></td></tr>`).join('')}
+    </tbody></table></div>
+    <p class="muted" style="font-size:.85rem">Terrenos básicos não entram na conta. Preços variam com a edição, o idioma e o estado da carta. Para um deck mais barato, use "Melhorar meu deck" com "Só comuns e incomuns".</p>`;
+  $$('[data-ph]').forEach(inp => inp.onchange = () => { const r = prc.rows[+inp.dataset.ph]; r.have = Math.max(0, Math.min(r.q, +inp.value || 0)); drawPrice(); });
+  const shop = () => prc.rows.filter(r => r.q > r.have);
+  $('#prCopy').onclick = () => copyText(shop().map(r => `${r.q - r.have} ${r.n}`).join('\n'));
+  $('#prCsv').onclick = () => downloadFile(`compras_${prc.name.replace(/[^\w-]+/g,'_')}.csv`, '﻿' + [['Quantidade','Carta','Nome em português','Preço unitário (R$)','Total (R$)','LigaMagic']].concat(shop().map(r => [r.q - r.have, r.n, r.pt || '', r.u ? (r.u * S.fx).toFixed(2).replace('.',',') : '', r.u ? (r.u * S.fx * (r.q - r.have)).toFixed(2).replace('.',',') : '', ligaURL(r.n)])).map(x => x.map(c => /[;"\n]/.test(String(c)) ? `"${String(c).replace(/"/g,'""')}"` : c).join(';')).join('\r\n'), 'text/csv;charset=utf-8');
 }
 
 /* ---------- 5. sideboard ---------- */

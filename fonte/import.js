@@ -320,6 +320,7 @@ function impResultHTML(){
         <span class="eyebrow" style="margin-top:6px">O que fazer agora</span>
         <div class="next-grid">
           <button class="next hot" data-imgo="otimizar"><b>Melhorar meu deck</b><small>Veja as trocas sugeridas, aceite as que quiser e receba a lista otimizada para o Arena</small></button>
+          <button class="next hot2" data-imgo="preco"><b>Orçamento das cartas físicas</b><small>Quanto custa montar este deck no papel, com lista de compras e links da LigaMagic</small></button>
           <button class="next" data-imgo="entenda"><b>Entender o deck</b><small>Estilo, função de cada carta, combos e dicas</small></button>
           <button class="next" data-imgo="analise"><b>Analisador</b><small>Curva de mana, cores e terrenos</small></button>
           <button class="next" data-imgo="mao"><b>Testar mãos iniciais</b><small>Compre 7 e decida o mulligan</small></button>
@@ -348,6 +349,7 @@ function bindImpResult(){
   $$('[data-imgo]').forEach(b => b.onclick = () => {
     const go = b.dataset.imgo; sendImported();
     if (go === 'sim') { simSel = 'mine'; trTab = 'sim'; show('treino'); return; }
+    if (go === 'preco') { deckTab = 'preco'; RENDER.decks(); setTimeout(() => { const b = $('#prGo'); if (b) b.click(); }, 60); window.scrollTo({top:0}); return; }
     if (go === 'duelo') { playDuelWith([...C.cmd, ...C.main]); return; }
     if (go === 'otimizar') { ow.step = 1; ow.sugg = null; opt.res = null; deckTab = 'otimizar'; RENDER.decks(); const st = $('#owSt'); if (st) st.textContent = 'Lendo o deck…'; entAnalyze().then(() => { if (deckTab === 'otimizar') { ow.step = ent.A ? 2 : 1; renderOptFlow(); } }); window.scrollTo({top:0}); return; }
     deckTab = go; RENDER.decks();
