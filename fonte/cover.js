@@ -72,6 +72,23 @@ const GUILD_OF = {WU:'Azorius',UB:'Dimir',BR:'Rakdos',RG:'Gruul',GW:'Selesnya',W
 const PIE = ['W','U','B','R','G'];
 let cvPanel = null, cq = {i:0, sc:{W:0,U:0,B:0,R:0,G:0}, done:false, order:null}, seq = [];
 
+const CVT = [
+  ['Serra Angel','Serra Angel · Alpha, 1993. Voa e ataca sem virar: a criatura branca mais famosa da primeira coleção.'],
+  ['Lightning Bolt','Lightning Bolt · Alpha, 1993. Três de dano por uma única mana vermelha. Jogado até hoje.'],
+  ['Black Lotus','Black Lotus · Alpha, 1993. A carta mais famosa e valiosa da história do Magic: três manas de graça.'],
+  ['Shivan Dragon','Shivan Dragon · Alpha, 1993. O primeiro grande dragão do jogo, o sonho de todo jogador dos anos 90.'],
+  ['Llanowar Elves','Llanowar Elves · Alpha, 1993. O elfo que gera mana, reimpresso em dezenas de coleções.']
+];
+const CVTKEY = 'academiaPlaneswalker.cvimg.v1';
+function cvtLoad(el){
+  const fan = $('#cvtFan', el); if (!fan) return;
+  const paint = M => CVT.forEach(([n],i) => { const b = $(`[data-cvt="${i}"]`, fan); if (b && M[n] && !$('img', b)) { const im = new Image(); im.alt = n; im.decoding = 'async'; im.onload = () => b.classList.add('in'); im.src = M[n]; b.appendChild(im); } });
+  $$('[data-cvt]', fan).forEach(b => { const i = +b.dataset.cvt; const f = () => { $('#cvtCap', el).textContent = CVT[i][1]; $$('[data-cvt]', fan).forEach(x => x.classList.toggle('sel', x === b)); }; b.onclick = f; b.onmouseenter = f; b.onfocus = f; });
+  let M = {}; try { M = JSON.parse(localStorage.getItem(CVTKEY)) || {}; } catch(e){}
+  if (CVT.every(([n]) => M[n])) return paint(M);
+  fetch('https://api.scryfall.com/cards/collection', {method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'}, body: JSON.stringify({identifiers: CVT.map(([name]) => ({name, set:'lea'}))})})
+    .then(r => r.ok ? r.json() : null).then(j => { if (!j) return; (j.data||[]).forEach(c => { const u = c.image_uris && (c.image_uris.normal || c.image_uris.large); if (u) M[c.name] = u; }); try { localStorage.setItem(CVTKEY, JSON.stringify(M)); } catch(e){} paint(M); }).catch(()=>{});
+}
 function buildCover(){
   const el = document.createElement('div'); el.id = 'cover'; el.setAttribute('role','dialog'); el.setAttribute('aria-label','Capa da Academia do Planeswalker');
   document.body.prepend(el);
@@ -79,6 +96,14 @@ function buildCover(){
   const pos = PIE.map((c,i)=>{ const a = -Math.PI/2 + i*2*Math.PI/5; return [c, 50 + 37*Math.cos(a), 50 + 37*Math.sin(a)]; });
   el.innerHTML = `<canvas class="sky" id="sky" aria-hidden="true"></canvas>
   <div class="cv-in">
+    <section class="cv-title" aria-label="Tela de início">
+      <div class="cvt-fan" id="cvtFan">${CVT.map(([n],i) => `<button class="cvt-c" style="--i:${i}" data-cvt="${i}" aria-label="${n}"><span class="cvt-back" aria-hidden="true"></span></button>`).join('')}</div>
+      <p class="cvt-cap" id="cvtCap" aria-live="polite">${CVT[2][1]}</p>
+      <h1 class="cvt-h">Academia do Planeswalker</h1>
+      <p class="cvt-sub">Em 1993, o matemático Richard Garfield criou o primeiro jogo de cartas colecionáveis. Acima, cinco lendas daquela primeira coleção, a Alpha. Aqui você aprende, monta e joga Magic, em português.</p>
+      <button class="cvt-start" id="cvStart"><span class="cvt-tap" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></span><span class="cvt-l"><b>Embaralhe e jogue</b><small>${doneN || S.xp ? 'Continuar a jornada' : 'Toque para começar'}</small></span></button>
+      <button class="cvt-more" id="cvtMore">Extras para fãs e o segredo das cinco cores ↓</button>
+    </section>
     <section class="cv-hero">
       <div>
         <p class="cv-eyebrow">Magic: The Gathering · em português</p>
@@ -124,6 +149,8 @@ function buildCover(){
   </div>`;
   const enter = () => { el.hidden = true; document.body.style.overflow = ''; stopSky(); sfx('win'); RENDER[currentView] && RENDER[currentView](); if (!S.tourAsked) { S.tourAsked = true; S.seenVer = CUR_VER; save(); setTimeout(startTour, 400); } else maybeShowUpdates(); };
   $('#cvEnter').onclick = enter; $('#cvEnter2').onclick = enter;
+  $('#cvStart').onclick = enter; $('#cvtMore').onclick = () => { const h = $('.cv-hero', el); if (h) h.scrollIntoView({behavior:'smooth'}); };
+  cvtLoad(el);
   $('#cvExtras').onclick = () => $('#cvX').scrollIntoView({behavior:'smooth'});
   $$('[data-x]', el).forEach(b => b.onclick = () => {
     const k = b.dataset.x;

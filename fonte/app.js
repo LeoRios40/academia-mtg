@@ -213,7 +213,7 @@ function show(v){
   const nv = v === 'combate' ? 'treino' : v; $$('.tab').forEach(t => t.getAttribute('data-go') === nv ? t.setAttribute('aria-current','page') : t.removeAttribute('aria-current'));
   document.body.dataset.sec = nv; currentView = v; RENDER[v] && RENDER[v]();
   try { history.replaceState(null,'','#'+v); } catch(e){}
-  window.scrollTo({top:0});
+  if (window.scrollY) window.scrollTo({top:0});
 }
 
 /* ===== tema e som ===== */

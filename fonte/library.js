@@ -26,13 +26,13 @@ function renderSection(v){
   let tab = deck ? deckTab : trTab;
   if (tab === 'orcamento') { tab = 'preco'; deckTab = 'preco'; }
   if (secOfTab(D.kind, tab) !== v) { tab = lastTab[v] || D.tabs[0][0]; if (deck) deckTab = tab; else trTab = tab; }
-  lastTab[v] = tab;
+  lastTab[v] = tab; const tl = D.tabs.find(x => x[0] === tab); if (tl) { S.lastTool = {v, tab, l: tl[1], h: D.h}; save(); }
   Object.keys(SECTIONS).forEach(o => { if (o !== v && SECTIONS[o].kind === D.kind) { const el = $('#v-' + o); if (el) el.innerHTML = ''; } });
   const bodyId = deck ? 'deckBody' : 'trBody';
   setTimeout(() => typeof addAreaTour === 'function' && addAreaTour(v), 0);
   $('#v-' + v).innerHTML = `<div class="view-head"><h1>${D.h}</h1><p>${D.p}</p></div>
     ${deck && v !== 'arena' ? deckBarHTML() : ''}
-    <div class="seg seg-wrap" role="tablist">${D.tabs.map(([k,l]) => `<button role="tab" data-${deck ? 'dt' : 'tt'}="${k}" aria-selected="${tab===k}">${l}</button>`).join('')}</div>
+    <div class="tools-grid" role="tablist" aria-label="Ferramentas de ${D.h}">${D.tabs.map(([k,l]) => `<button class="tool" role="tab" data-${deck ? 'dt' : 'tt'}="${k}" aria-selected="${tab===k}">${typeof toolIcon === 'function' ? toolIcon(k) : ''}<span class="tool-t"><b>${l}</b>${typeof TAB_HINT !== 'undefined' && TAB_HINT[k] ? `<small>${TAB_HINT[k]}</small>` : ''}</span></button>`).join('')}</div>
     <div id="${bodyId}"></div>`;
   if (deck) { $$('[data-dt]').forEach(b => b.onclick = () => { deckTab = b.dataset.dt; renderSection(v); }); bindDeckBar(); (DECK_R()[tab] || renderLib)(); }
   else { $$('[data-tt]').forEach(b => b.onclick = () => { if (b.dataset.tt === 'calc') { show('combate'); return; } trTab = b.dataset.tt; renderSection(v); }); if (tab === 'calc') { show('combate'); return; } (TR_R()[tab] || renderDuel)($('#trBody')); try { seen('t_' + tab); } catch(e){} }

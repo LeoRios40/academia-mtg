@@ -107,7 +107,7 @@ const FEATS = [
  ['Mapa do Multiverso','Os planos do Magic','multiverso planos mapa',goC('map')],
  ['Adivinhe a carta','Descubra a carta pela ilustração','adivinhe jogo ilustração',goC('guess')],
  ['Evolução das molduras','A mesma carta em várias épocas','molduras frames evolução',goC('frames')],
- ['Levar o progresso para outro aparelho','Exportar e importar','backup exportar importar progresso',()=>{ show('inicio'); setTimeout(()=>{ const b = $('#bkFile'); b && b.scrollIntoView({block:'center'}); }, 80); }]
+ ['Levar o progresso para outro aparelho','Exportar e importar','backup exportar importar progresso',()=>{ show('inicio'); setTimeout(()=>{ const b = $('#bkDoh'); b && b.scrollIntoView({block:'center'}); }, 80); }]
 ];
 const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
 function openSearch(){
