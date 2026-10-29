@@ -1197,7 +1197,7 @@ body[data-sec="mesa"] .view-head h1,body[data-sec="construir"] .view-head h1,bod
   @keyframes toolIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 }
 /* atalhos da página inicial */
-.quick{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:4px 0 22px}
+.quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:4px 0 22px}
 .qk{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:12px 14px 14px;min-height:108px;border-radius:14px;cursor:pointer;color:var(--ink);
   background:var(--txtbox);border:4px solid var(--border-black);box-shadow:inset 0 0 0 3px var(--pipc,#c9a24a),0 12px 22px -14px rgba(0,0,0,.7);transition:transform .15s ease}
 .qk:hover{transform:translateY(-3px) rotate(-.4deg)}
@@ -1294,6 +1294,47 @@ body[data-sec="mesa"] .view-head h1,body[data-sec="construir"] .view-head h1,bod
 :root[data-lite] .qk,:root[data-lite] .tool,:root[data-lite] .deckbox,:root[data-lite] .gsearch,:root[data-lite] .tab{box-shadow:none!important}
 :root[data-lite] .view > *{content-visibility:auto;contain-intrinsic-size:auto 600px}
 :root[data-lite] .cv-title::before{display:none}
+
+/* ===================== v3.3: jogo Sobreviva ao Multiverso ===================== */
+@media (min-width:821px) and (max-width:1080px){.quick{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.qk[data-sec="treino"]{--pipc:#e0603a}
+.surv-pw{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+@media (max-width:620px){.surv-pw{grid-template-columns:repeat(2,minmax(0,1fr))}.surv-c small{font-size:.76rem}}
+.surv-c{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:10px 12px;border-radius:12px;cursor:pointer;color:var(--ink);background:var(--txtbox-2);border:2px solid var(--cardline);box-shadow:inset 4px 0 0 var(--pc)}
+.surv-c b{font-family:var(--f-display)}.surv-c small{font-size:.82rem;color:var(--muted);line-height:1.3}
+.surv-c[aria-pressed="true"]{border-color:var(--border-black);background:linear-gradient(180deg,color-mix(in srgb,var(--pc) 35%,var(--txtbox)),var(--txtbox));box-shadow:inset 0 0 0 2px var(--pc)}
+#surv{position:fixed;inset:0;z-index:960;background:#121822;touch-action:none;user-select:none;-webkit-user-select:none}
+#surv[hidden]{display:none}
+#svCv{display:block;position:absolute;inset:0}
+.sv-hud{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:10px;padding:calc(8px + env(safe-area-inset-top,0px)) 10px 8px;color:#f3d68c;font:700 .95rem var(--f-body);pointer-events:none}
+.sv-bars{flex:1;display:flex;flex-direction:column;gap:4px;max-width:420px}
+.sv-hp,.sv-xp{height:10px;border-radius:6px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.2);overflow:hidden}
+.sv-xp{height:6px}
+.sv-hp i,.sv-xp i{display:block;height:100%;transition:width .1s}
+.sv-hp i{background:linear-gradient(90deg,#c4301c,#ff7a5a)}.sv-xp i{background:linear-gradient(90deg,#4a95d6,#9fd0ff)}
+.sv-t{margin-left:auto;font-size:1.1rem}.sv-k::before{content:"☠ ";opacity:.8}
+.sv-pause{pointer-events:auto;width:40px;height:40px;border-radius:50%;border:2px solid #c9a24a;background:rgba(0,0,0,.5);color:#f3d68c;font-weight:900;cursor:pointer}
+.sv-w{position:absolute;left:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;flex-wrap:wrap;gap:4px;pointer-events:none;max-width:70vw}
+.sv-w span{font:700 .72rem var(--f-body);color:#fff;background:rgba(0,0,0,.55);border:1px solid var(--pc);border-radius:7px;padding:2px 6px}
+.sv-ov{position:absolute;inset:0;display:grid;place-items:center;padding:14px;background:rgba(6,8,14,.72);overflow:auto}
+.sv-ov[hidden]{display:none}
+.sv-box{width:min(760px,100%);text-align:center;color:#f2ecdf;display:flex;flex-direction:column;gap:12px;align-items:center}
+.sv-box h2{font-family:var(--f-display);color:#f3d68c;font-size:clamp(1.6rem,4.5vw,2.4rem);margin:0}
+.sv-box p{margin:0}
+.sv-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:100%}
+.sv-card{position:relative;display:flex;flex-direction:column;gap:6px;text-align:left;padding:10px 10px 12px;border-radius:12px;cursor:pointer;color:#1d1a16;background:#f7f3ea;border:6px solid #0c0b10;box-shadow:inset 0 0 0 3px var(--pc),0 14px 28px rgba(0,0,0,.6);transition:transform .15s}
+.sv-card:hover,.sv-card:focus{transform:translateY(-6px)}
+.sv-ct{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:4px 8px;border-radius:8px;background:linear-gradient(180deg,color-mix(in srgb,var(--pc) 45%,#fff),color-mix(in srgb,var(--pc) 25%,#fff));border:2px solid rgba(0,0,0,.5)}
+.sv-ct b{font-family:var(--f-display);font-size:1.02rem}
+.sv-ty{font-size:.76rem;font-weight:800;padding:2px 8px;border-radius:6px;background:rgba(0,0,0,.08)}
+.sv-tx{font-size:.92rem;line-height:1.35}
+.sv-fl{font-family:var(--f-flavor);font-style:italic;font-size:.82rem;line-height:1.35;color:#5f574b;border-top:1px solid #cfc6b2;padding-top:6px}
+.sv-kk{position:absolute;right:8px;bottom:6px;font:800 .7rem var(--f-body);color:#9a907f}
+.sv-stats{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}.sv-stats b{font-size:1.4rem;color:#f3d68c;display:block}
+.sv-rec{color:#57c78c;font-weight:800}
+.sv-fact{background:#f3ead3;color:#2b2310;border-radius:12px;padding:12px 14px;text-align:left;max-width:560px}
+.sv-have{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}.sv-have .pill{background:rgba(255,255,255,.1);color:#f2ecdf}
+@media (max-width:640px){.sv-cards{grid-template-columns:1fr;gap:8px}.sv-card{padding:8px 10px}.sv-fl{font-size:.76rem;padding-top:4px}.sv-tx{font-size:.86rem}.sv-kk{display:none}.sv-hud{font-size:.85rem;gap:6px}.sv-t{font-size:1rem}}
 </style>
 </head>
 <body>
@@ -1358,7 +1399,7 @@ body[data-sec="mesa"] .view-head h1,body[data-sec="construir"] .view-head h1,bod
 <footer class="foot">
   <div class="foot-line">
     <span class="credit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 3c-4 2-9 7-11 10l2 2c3-2 8-7 10-11z"/><path d="M8 14c-2 0-4 1.5-4 4 0 1-1 2-2 2 2 1.5 6 1 7-1.5.5-1.2.3-2.3-.5-3"/></svg>Criado por Leonardo Rios</span>
-    <span class="cn">ACD <i>•</i> PT-BR <button class="foot-link" onclick="openUpdates(false)">Atualizações (versão <span id="verFoot">3.2</span>)</button></span>
+    <span class="cn">ACD <i>•</i> PT-BR <button class="foot-link" onclick="openUpdates(false)">Atualizações (versão <span id="verFoot">3.3</span>)</button></span>
   </div>
   <p>Ferramenta feita para ajudar no aprendizado de Magic. Imagens das cartas: Scryfall. Magic: The Gathering © Wizards of the Coast. Projeto educativo, sem fins comerciais.</p>
 </footer>

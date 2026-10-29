@@ -11,14 +11,14 @@ const SECTIONS = {
   arena:{kind:'deck', h:'Arena e coleção', p:'Tudo do MTG Arena e das suas cartas: guia do Arena, coleção do Arena usada pelo gerador, decks famosos, coleção física e lista de desejos.',
     tabs:[['arena','Central do Arena'],['acoll','Coleção do Arena'],['famosos','Decks famosos'],['colecao','Coleção física'],['desejos','Lista de desejos']]},
   treino:{kind:'tr', h:'Treino', p:'Pratique como os veteranos: jogue contra o computador, simule decks, resolva quebra-cabeças e treine bloqueios, mulligan, pilha e Draft.',
-    tabs:[['duelo','Partida contra o computador'],['sim','Simulador de deck'],['puz','Quebra-cabeças'],['criar','Criar quebra-cabeça'],['bloq','Bloqueios'],['ler','Ler a mesa'],['mull','Mulligan'],['pilha','Pilha'],['draft','Draft']]},
+    tabs:[['surv','Jogo: Sobreviva ao Multiverso'],['duelo','Partida contra o computador'],['sim','Simulador de deck'],['puz','Quebra-cabeças'],['criar','Criar quebra-cabeça'],['bloq','Bloqueios'],['ler','Ler a mesa'],['mull','Mulligan'],['pilha','Pilha'],['draft','Draft']]},
   mesa:{kind:'tr', h:'Na mesa', p:'Ferramentas para a partida de verdade com os amigos: contador de vida, sorteio de mesas e torneio, árbitro de bolso e calculadora de combate.',
     tabs:[['vida','Contador de vida'],['grupo','Grupo e torneio'],['juiz','Árbitro de bolso'],['calc','Calculadora de combate']]}
 };
 const DECK_R = () => ({importar:renderImport, otimizar:renderOptFlow, entenda:renderEntenda, gerar:renderAssist, analise:renderAnalyzer, mao:renderHand, prob:renderProb, base:renderManaBase, sugestoes:renderSuggest,
   colecao:renderColl, desejos:renderWish, orcamento:renderPrice, preco:renderPrice, comparar:renderCompare, desafios:renderChal, famosos:renderFamous, arena:renderArenaHub, guia:renderGuide,
   biblioteca:renderLib, link:renderLink, proxies:renderProxies, side:renderSide, testar:renderDuelTest, acoll:renderACollection});
-const TR_R = () => ({custom:renderCustomPuz, criar:renderPuzCreator, duelo:renderDuel, sim:renderSim, puz:renderPuz, bloq:renderBlk, ler:renderRead, mull:renderMull, pilha:renderStack, draft:renderDraft, vida:renderLifeIntro, grupo:renderGroup, juiz:renderJudge});
+const TR_R = () => ({surv:renderSurv, custom:renderCustomPuz, criar:renderPuzCreator, duelo:renderDuel, sim:renderSim, puz:renderPuz, bloq:renderBlk, ler:renderRead, mull:renderMull, pilha:renderStack, draft:renderDraft, vida:renderLifeIntro, grupo:renderGroup, juiz:renderJudge});
 const secOfTab = (kind, t) => { if (t === 'orcamento') return 'meus'; if (t === 'custom') return 'treino'; return Object.keys(SECTIONS).find(v => SECTIONS[v].kind === kind && SECTIONS[v].tabs.some(x => x[0] === t)); };
 const lastTab = {};
 function renderSection(v){

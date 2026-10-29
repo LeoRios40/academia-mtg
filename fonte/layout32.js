@@ -16,11 +16,12 @@ const IC = {
   eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>', refresh:'<path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/>', layers:'<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>',
   grid:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',
   users:'<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M15 14.5c3 0 6 2 6 5"/>', gavel:'<path d="M14 4l6 6M11 7l6 6M8 10l6-6M10 12L3 19l2 2 7-7"/>',
+  game:'<rect x="2" y="7" width="20" height="11" rx="5"/><path d="M7 10v5M4.5 12.5h5"/><circle cx="16" cy="11.5" r="1"/><circle cx="18.5" cy="14" r="1"/>',
   calc:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M8 16h2M12 16h2"/>', teach:'<rect x="3" y="4" width="18" height="12" rx="1"/><path d="M8 20h8M12 16v4"/><path d="M7 9h6M7 12h4"/>'
 };
-const TAB_IC = {importar:'import', otimizar:'star', entenda:'book', gerar:'wand', side:'swap', testar:'sword', guia:'compass', desafios:'trophy', analise:'chart', mao:'hand', prob:'percent', base:'drop', sugestoes:'bulb', comparar:'compare',
+const TAB_IC = {surv:'game', importar:'import', otimizar:'star', entenda:'book', gerar:'wand', side:'swap', testar:'sword', guia:'compass', desafios:'trophy', analise:'chart', mao:'hand', prob:'percent', base:'drop', sugestoes:'bulb', comparar:'compare',
   biblioteca:'box', preco:'coin', link:'link', proxies:'print', arena:'shield', acoll:'cards', famosos:'crown', colecao:'cards', desejos:'heart', duelo:'robot', sim:'play', puz:'puzzle', criar:'pen', bloq:'shieldb', ler:'eye', mull:'refresh', pilha:'layers', draft:'grid', vida:'heart', grupo:'users', juiz:'gavel', calc:'calc'};
-const TAB_HINT = {gerar:'Perguntas → deck pronto', otimizar:'Trocas que você aprova', entenda:'Estilo, combos e dicas', side:'15 de reserva e trocas', testar:'Jogue com o seu deck', guia:'Regras de ouro', desafios:'Treine a montagem',
+const TAB_HINT = {surv:'Ação: sobreviva 10 minutos', gerar:'Perguntas → deck pronto', otimizar:'Trocas que você aprova', entenda:'Estilo, combos e dicas', side:'15 de reserva e trocas', testar:'Jogue com o seu deck', guia:'Regras de ouro', desafios:'Treine a montagem',
   analise:'Curva, cores e terrenos', mao:'Compre 7 e decida', prob:'Chance de comprar', base:'Terrenos por cor', sugestoes:'Cartas para o deck', comparar:'O que mudou entre listas',
   biblioteca:'Decks e versões', importar:'Arena, planilha ou à mão', preco:'Quanto custa no papel', link:'Mande no WhatsApp', proxies:'Folhas A4 para testar',
   arena:'Leve o deck ao Arena', acoll:'Suas cartas no Arena', famosos:'Clássicos e atuais', colecao:'Suas cartas em casa', desejos:'Cartas que você quer',
@@ -34,6 +35,7 @@ const QUICK = [
   ['import','Importar meu deck','Do Arena, de planilha ou à mão','meus',() => { deckTab = 'importar'; show('meus'); }],
   ['wand','Criar deck do zero','Responda perguntas e receba o deck','construir',() => { deckTab = 'gerar'; show('construir'); }],
   ['star','Melhorar meu deck','Trocas sugeridas para aprovar','construir',() => { deckTab = 'otimizar'; show('construir'); }],
+  ['game','Jogo: Sobreviva ao Multiverso','Ação estilo survivors com mágicas do Magic','treino',() => { trTab = 'surv'; show('treino'); }],
   ['robot','Jogar contra o computador','Partida rápida em 3 níveis','treino',() => { trTab = 'duelo'; show('treino'); }],
   ['book','Aprender do zero','Primeiros passos, sem complicação','regras',() => { rulesTab = 'simples'; show('regras'); }],
   ['teach','Modo professor','Ensine Magic na TV ou no projetor','academia',() => openTeach(0, 0)]
@@ -67,6 +69,7 @@ function quickHTML(){
 })();
 /* ---------- busca e mapa: novidades ---------- */
 FEATS.push(
+  ['Jogo: Sobreviva ao Multiverso','Jogo de ação estilo Vampire Survivors com mágicas e criaturas do Magic','jogo game survivors vampire acao sobreviver jogar diversao',() => { trTab = 'surv'; show('treino'); }],
   ['Modo professor','Aulas em tela cheia para ensinar Magic na TV ou no projetor','professor ensinar aula turma apresentação tv projetor slides',() => openTeach(0, 0)],
   ['Fazer backup','Baixe um arquivo com seus decks, coleção e progresso','backup salvar copia segurança restaurar trocar celular',() => { openSettings(); setTimeout(() => { const b = $('#bkDos'); if (b) b.scrollIntoView({block:'center'}); }, 50); }],
   ['Diagnóstico','Testa se a internet e os serviços funcionam neste aparelho','diagnostico teste erro problema funciona internet scryfall',() => openDiag()],
