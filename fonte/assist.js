@@ -153,7 +153,7 @@ function renderAssist(){
 function asS1(){
   return `<span class="q-t">Em que tipo de jogo você vai usar o deck?</span>
     <div class="pick as-fmt">${Object.entries(AF).map(([k,f]) => `<button data-af="${k}" aria-pressed="${asd.fmt===k}"><b>${f.n}${f.arena ? ' <span class="pill good">Arena</span>' : ''}</b><small>${f.d}</small></button>`).join('')}</div>
-    <p class="muted" style="font-size:.88rem">Commander não existe no Arena com esse nome: lá ele se chama Brawl. Os formatos de mesa geram a lista do mesmo jeito, para montar com cartas físicas ou importar em sites como Moxfield.</p>`;
+    <p class="muted" style="font-size:.88rem">Commander não existe no Arena com esse nome: lá ele se chama Brawl. <b>Vai jogar no Arena? Escolha Brawl</b>, assim só entram cartas que existem no Arena. Os formatos de mesa geram a lista do mesmo jeito, para montar com cartas físicas ou importar em sites como Moxfield.</p>`;
 }
 function asS2(){
   const a = asd.a; const all = AQ.every(q => a[q.k]);
@@ -200,7 +200,10 @@ function asS5(){
   const w = wildcards(r.list);
   const wc = F.arena ? `<div class="as-wc"><span class="muted">${S.acoll && Object.keys(S.acoll).length ? 'Curingas que faltam, descontando a sua coleção do Arena:' : 'Curingas no Arena, se você não tiver nenhuma das cartas (cadastre sua coleção em Arena e coleção):'}</span><div class="row-h">${[['mythic','Míticas'],['rare','Raras'],['uncommon','Incomuns'],['common','Comuns']].map(([k,l]) => `<span class="wc wc-${k}"><b>${w[k]}</b> ${l}</span>`).join('')}</div></div>` : '';
   const extra = `<p class="muted" style="font-size:.9rem">${F.n} · ${AS_ARCH[asd.choice.arch].n} ${asColName(asd.choice.cols)}. Cartas escolhidas entre as mais jogadas para cada função (dados do Scryfall/EDHREC)${F.arena ? ', só as que existem no Arena' : ''}. É um ponto de partida: jogue, observe e ajuste.</p>${wc}<div class="row-h"><button class="btn" id="asTxt">Baixar lista (.txt)</button><button class="btn" id="asCsv">Baixar planilha</button><button class="btn" id="asImprove">Melhorar este deck</button><button class="btn" id="asVar">Gerar outra variação</button><button class="btn" data-ass2="2">Mudar as respostas</button></div><details><summary>Composição do deck: meta e o que entrou</summary>${comp}</details>`;
-  return resultHTML('asRes', `Seu deck · ${r.list.reduce((a,e)=>a+e.q,0)} cartas`, r.list, r.cmd, extra)
+  const phys = !F.arena ? `<div class="tip af-tip"><b>Este deck é para a mesa física (${F.n}).</b> Ele pode ter cartas que não existem no MTG Arena, e o Arena recusa a lista inteira se houver uma delas. Para jogar no Arena, toque em <b>Converter para o Arena</b>: a Academia troca essas cartas por equivalentes do Arena${F.size === 100 ? ' (no Arena o Commander se chama Brawl)' : ''}.<div class="row-h" style="margin-top:8px"><button class="btn primary small" id="asToArena">Converter para o Arena</button></div></div>` : '';
+  let H = resultHTML('asRes', `Seu deck · ${r.list.reduce((a,e)=>a+e.q,0)} cartas`, r.list, r.cmd, phys + extra);
+  if (!F.arena) H = H.replace('Lista para importar no MTG Arena', 'Lista do deck (mesa física, Moxfield, Archidekt)').replace('>Copiar para o Arena<', '>Copiar lista<');
+  return H
 ;
 }
 async function asRun(st){
@@ -227,6 +230,7 @@ function bindAssist(){
   if (asd.step === 5 && asd.res) {
     const r = asd.res, F = AF[asd.fmt];
     bindResult('asRes', r.list, r.cmd, F.arena ? asd.fmt : (F.size === 100 ? 'brawl' : 'standard'));
+    if (!F.arena) { const c = $('[data-copy="asRes"]'); if (c) c.onclick = () => { copyText(arenaList(r.list, r.cmd), $('#asResTxt')); toast('Lista copiada (versão para a mesa física).'); }; const ta = $('#asToArena'); if (ta) ta.onclick = () => copyForArena(r.list, r.cmd); }
     const C = {cmd: r.cmd ? [{name:r.cmd, q:1}] : [], comp:[], side:[], main: r.list.filter(e => e.name !== r.cmd)};
     $('#asTxt').onclick = () => downloadFile('deck_academia.txt', arenaList(r.list, r.cmd), 'text/plain;charset=utf-8');
     $('#asCsv').onclick = () => downloadFile('deck_academia.csv', sheetCSV(C), 'text/csv;charset=utf-8');

@@ -164,7 +164,7 @@ function renderLibDeck(id){
   $('#libRen').onclick = () => { const n = prompt('Novo nome do deck:', D.name); if (n && n.trim()) { D.name = n.trim(); save(); renderLibDeck(id); } };
   $('#libDel').onclick = () => { if (confirm(`Excluir "${D.name}" e todas as versões?`)) { S.lib = libAll().filter(d => d.id !== id); if (S.curDeck === id) S.curDeck = null; save(); libOpen = null; renderSection(currentView); } };
   $$('[data-vuse]').forEach(b => b.onclick = () => { useDeck(id, +b.dataset.vuse); toast('Versão em uso: ' + esc(V[+b.dataset.vuse].label)); renderSection(currentView); });
-  $$('[data-vcp]').forEach(b => b.onclick = () => copyText(V[+b.dataset.vcp].text));
+  $$('[data-vcp]').forEach(b => b.onclick = () => copyForArena(parseDeck(V[+b.dataset.vcp].text), D.cmd || ''));
   $$('[data-vdf]').forEach(b => b.onclick = () => { const i = +b.dataset.vdf; $('#vdf' + i).innerHTML = diffText(V[i-1].text, V[i].text); });
   $$('[data-vdel]').forEach(b => b.onclick = () => { if (confirm('Excluir esta versão?')) { V.splice(+b.dataset.vdel, 1); save(); renderLibDeck(id); } });
   $$('[data-lgo]').forEach(b => b.onclick = () => { useDeck(id); const g = b.dataset.lgo; deckTab = g; if (g === 'otimizar') { RENDER.decks(); entAnalyze().then(() => { if (deckTab === 'otimizar') { ow.step = ent.A ? 2 : 1; renderOptFlow(); } }); } else RENDER.decks(); window.scrollTo({top:0}); });

@@ -1423,6 +1423,12 @@ body[data-sec="mesa"] .view-head h1,body[data-sec="construir"] .view-head h1,bod
 .sv-evo.ok{border-color:#f3d68c}
 @media (max-width:640px){.sv-cards.n4,.sv-cards.n5,.sv-cards.n2{grid-template-columns:1fr}.sv-art{height:64px}.sv-ult{width:82px;height:82px}.sv-ic{width:32px;height:32px}.sv-ic.pas{width:26px;height:26px}.sv-pack{width:140px;height:200px}.sv-card{gap:4px}}
 @media (prefers-reduced-motion:reduce){.sv-card.flip,.sv-pack,.sv-ult.ready,.sv-card.evo::after{animation:none!important}}
+
+/* v3.5: conferência do Arena */
+.af-bad{display:flex;flex-wrap:wrap;gap:6px}
+.af-ch{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;font-size:.92rem;max-height:240px;overflow:auto}
+.af-ch s{color:var(--bad)}
+.af-tip{border-left-color:var(--warn)!important;background:color-mix(in srgb,var(--warn) 10%,var(--txtbox))!important}
 </style>
 </head>
 <body>
@@ -1487,7 +1493,7 @@ body[data-sec="mesa"] .view-head h1,body[data-sec="construir"] .view-head h1,bod
 <footer class="foot">
   <div class="foot-line">
     <span class="credit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 3c-4 2-9 7-11 10l2 2c3-2 8-7 10-11z"/><path d="M8 14c-2 0-4 1.5-4 4 0 1-1 2-2 2 2 1.5 6 1 7-1.5.5-1.2.3-2.3-.5-3"/></svg>Criado por Leonardo Rios</span>
-    <span class="cn">ACD <i>•</i> PT-BR <button class="foot-link" onclick="openUpdates(false)">Atualizações (versão <span id="verFoot">3.4</span>)</button></span>
+    <span class="cn">ACD <i>•</i> PT-BR <button class="foot-link" onclick="openUpdates(false)">Atualizações (versão <span id="verFoot">3.5</span>)</button></span>
   </div>
   <p>Ferramenta feita para ajudar no aprendizado de Magic. Imagens das cartas: Scryfall. Magic: The Gathering © Wizards of the Coast. Projeto educativo, sem fins comerciais.</p>
 </footer>

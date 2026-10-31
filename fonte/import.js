@@ -341,7 +341,7 @@ function sendImported(){
 }
 function bindImpResult(){
   const C = canonList(imp.E);
-  const cp = $('#impCopy'); if (cp) cp.onclick = () => copyText(arenaText(C), $('#impOutTxt'));
+  const cp = $('#impCopy'); if (cp) cp.onclick = () => copyForArena([...C.cmd, ...C.comp, ...C.main], C.cmd[0] ? C.cmd[0].name : '');
   const sv = $('#impSave'); if (sv) sv.onclick = () => { const cmd = C.cmd[0] ? C.cmd[0].name : ''; openSaveDialog(arenaText(C), {cmd, name: imp.shared || '', label:'Importado'}); };
   const cv = $('#impCsv'); if (cv) cv.onclick = () => downloadFile('meu_deck.csv', sheetCSV(C), 'text/csv;charset=utf-8');
   $$('[data-fix]').forEach(b => b.onclick = async () => { const i = +b.dataset.fix; const v = $(`[data-fixv="${i}"]`).value.trim(); if (!v) return; const e = imp.E[i]; e.name = v; e.set = ''; e.cn = ''; b.disabled = true; await resolveImport([e], impSt); impSt(e.en ? `Encontrei: ${e.en}.` : `Ainda não encontrei "${v}". Confira a grafia.`); $('#impRes').innerHTML = impResultHTML(); bindImpResult(); });
