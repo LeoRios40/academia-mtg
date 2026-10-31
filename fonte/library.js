@@ -423,9 +423,14 @@ function renderACollection(){
   $('#deckBody').innerHTML = `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));align-items:start">
     <div class="panel stack-v"><h3>Coleção do Arena</h3>
       <p class="muted" style="margin:0">Diga à Academia quais cartas você já tem no MTG Arena. Assim, ao criar ou melhorar um deck, ela prefere as suas cartas e mostra só os curingas que faltam.</p>
-      <div class="tip" style="font-size:.9rem"><b>Como trazer a coleção:</b> o Arena não exporta a coleção sozinho. Você pode (1) colar as listas dos decks que já montou no Arena (Decks → Exportar), um de cada vez, ou (2) usar um rastreador como Untapped.gg ou Aetherhub, que exporta a coleção em CSV, e enviar o arquivo aqui.</div>
+      <div class="tip" style="font-size:.9rem"><b>Como trazer a sua coleção:</b> o MTG Arena não tem um botão para exportar todas as cartas. Há três caminhos:
+        <ol style="margin:6px 0 0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px">
+          <li><b>Pelos seus decks (celular ou PC):</b> no Arena, abra cada deck e toque em Exportar; cole aqui e toque em "Adicionar à coleção". Repita para cada deck.</li>
+          <li><b>Rastreadores no PC:</b> programas que acompanham o Arena mostram a coleção completa e alguns exportam em CSV. O mtga-utils, por exemplo, gera o CSV a partir do registro do jogo; para isso, ative "Registros detalhados (suporte a plugins)" nas opções da conta do Arena. Envie o arquivo aqui.</li>
+          <li><b>À mão:</b> cole qualquer lista ou use Importar → Montar carta a carta.</li></ol></div>
       <label class="f" for="acTxt">Cole uma lista ou deck do Arena<textarea id="acTxt" rows="7" spellcheck="false" placeholder="4 Llanowar Elves&#10;2 Elfos de Llanowar (FDN) 227"></textarea></label>
       <div class="row-h"><button class="btn primary" id="acAdd">Adicionar à coleção</button><label class="btn" for="acFile" style="cursor:pointer">Enviar arquivo (CSV, Excel, .txt)<input type="file" id="acFile" accept=".csv,.txt,.xlsx,.xls,.ods" hidden></label>${deckCount(deckText) ? '<button class="btn" id="acDeck">Adicionar o deck em uso</button>' : ''}</div>
+      <button class="btn primary" id="acBuild" ${Object.keys(S.acoll||{}).length ? '' : 'disabled'}>Criar um deck só com as minhas cartas</button>
       <label class="row-h" style="gap:8px"><input type="checkbox" id="acPref" ${S.acPref !== false ? 'checked' : ''}> Preferir minhas cartas ao criar e melhorar decks</label>
       <p class="muted" id="acSt" style="font-size:.9rem"></p></div>
     <div class="panel stack-v"><h3>Minhas cartas no Arena</h3>
@@ -437,6 +442,7 @@ function renderACollection(){
   $('#acFile').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { const r = await readImportFile(f); let E; if (r.rows) { E = []; rowsToEntries(r.rows, E); E = group(E); } else E = parseImport(r.text, true); addE(E, 'adicionadas do arquivo'); } catch(err) { st('Não consegui ler o arquivo. Tente salvar como CSV.'); } };
   const ad = $('#acDeck'); if (ad) ad.onclick = () => addE(parseImport(deckText), 'do deck em uso adicionadas');
   $('#acPref').onchange = e => { S.acPref = e.target.checked; save(); };
+  const ab = $('#acBuild'); if (ab) ab.onclick = () => { asd.own = 'arena'; asd.step = 1; asd.choice = null; deckTab = 'gerar'; RENDER.decks(); window.scrollTo({top:0}); };
   const cl = $('#acClr'); if (cl) cl.onclick = () => { if (confirm('Apagar toda a coleção do Arena guardada?')) { S.acoll = {}; save(); renderACollection(); } };
   const fd = $('#acFind'); if (fd) fd.oninput = () => { const q = fold(fd.value); $$('#acList li').forEach(li => li.hidden = q && !fold(li.dataset.n).includes(q)); };
 }

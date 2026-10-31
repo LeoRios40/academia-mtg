@@ -1429,6 +1429,17 @@ body[data-sec="mesa"] .view-head h1,body[data-sec="construir"] .view-head h1,bod
 .af-ch{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;font-size:.92rem;max-height:240px;overflow:auto}
 .af-ch s{color:var(--bad)}
 .af-tip{border-left-color:var(--warn)!important;background:color-mix(in srgb,var(--warn) 10%,var(--txtbox))!important}
+
+/* v3.6: deck com as minhas cartas */
+.own-pick{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:12px;border:2px dashed var(--cardline);background:var(--txtbox-2);margin-bottom:12px}
+.own-src{grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr))}
+.own-src .own-empty{opacity:.75}
+.own-bar{display:block;height:8px;border-radius:5px;background:var(--cardline);overflow:hidden;margin:4px 0 2px}.own-bar i{display:block;height:100%}
+.own-load{padding:20px;text-align:center}
+.own-res{padding:12px 14px;border-radius:12px;border:2px solid var(--good);background:color-mix(in srgb,var(--good) 10%,var(--txtbox))}
+.own-res.part{border-color:var(--warn);background:color-mix(in srgb,var(--warn) 10%,var(--txtbox))}
+.gal-i.own-miss .mcard{filter:grayscale(.7) brightness(.85)}
+.own-tag{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);background:var(--bad);color:#fff;font-weight:800;font-size:.7rem;padding:1px 7px;border-radius:6px;border:2px solid #000}
 </style>
 </head>
 <body>
@@ -1493,7 +1504,7 @@ body[data-sec="mesa"] .view-head h1,body[data-sec="construir"] .view-head h1,bod
 <footer class="foot">
   <div class="foot-line">
     <span class="credit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 3c-4 2-9 7-11 10l2 2c3-2 8-7 10-11z"/><path d="M8 14c-2 0-4 1.5-4 4 0 1-1 2-2 2 2 1.5 6 1 7-1.5.5-1.2.3-2.3-.5-3"/></svg>Criado por Leonardo Rios</span>
-    <span class="cn">ACD <i>•</i> PT-BR <button class="foot-link" onclick="openUpdates(false)">Atualizações (versão <span id="verFoot">3.5</span>)</button></span>
+    <span class="cn">ACD <i>•</i> PT-BR <button class="foot-link" onclick="openUpdates(false)">Atualizações (versão <span id="verFoot">3.6</span>)</button></span>
   </div>
   <p>Ferramenta feita para ajudar no aprendizado de Magic. Imagens das cartas: Scryfall. Magic: The Gathering © Wizards of the Coast. Projeto educativo, sem fins comerciais.</p>
 </footer>
