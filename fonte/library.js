@@ -426,6 +426,7 @@ function renderACollection(){
       <div class="tip" style="font-size:.9rem"><b>Como trazer a sua coleção:</b> o MTG Arena não tem um botão para exportar todas as cartas. Há três caminhos:
         <ol style="margin:6px 0 0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px">
           <li><b>Pelos seus decks (celular ou PC):</b> no Arena, abra cada deck e toque em Exportar; cole aqui e toque em "Adicionar à coleção". Repita para cada deck.</li>
+          <li><b>Untapped.gg:</b> se você assina o Premium do Untapped, abra o seu perfil no site do Untapped e use "Exportar coleção" (gera um arquivo CSV). Envie esse arquivo aqui em "Enviar arquivo".</li>
           <li><b>Rastreadores no PC:</b> programas que acompanham o Arena mostram a coleção completa e alguns exportam em CSV. O mtga-utils, por exemplo, gera o CSV a partir do registro do jogo; para isso, ative "Registros detalhados (suporte a plugins)" nas opções da conta do Arena. Envie o arquivo aqui.</li>
           <li><b>À mão:</b> cole qualquer lista ou use Importar → Montar carta a carta.</li></ol></div>
       <label class="f" for="acTxt">Cole uma lista ou deck do Arena<textarea id="acTxt" rows="7" spellcheck="false" placeholder="4 Llanowar Elves&#10;2 Elfos de Llanowar (FDN) 227"></textarea></label>

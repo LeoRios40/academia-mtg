@@ -12,7 +12,7 @@ const fold = s => String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-
 
 /* ---------- leitura do texto ---------- */
 const ZONE_RE = [[/^(deck|main|maindeck|principal|baralho|deck principal)$/i,'main'],[/^(commander|comandante|comandantes)$/i,'cmd'],[/^(companion|companheiro|companheira)$/i,'comp'],[/^(sideboard|reserva|side|cartas de reserva)$/i,'side'],[/^(maybeboard|considering|talvez)$/i,'skip']];
-const HEAD = {q:/^(qtd|qtde|quant|quantidade|qty|quantity|count|n[ºo°]?\s*de\s*c[oó]pias|c[oó]pias|#)$/i, n:/^(nome|name|carta|card|card name|nome da carta)$/i, s:/^(set|cole[cç][aã]o|edi[cç][aã]o|edition|set code|c[oó]digo)$/i, c:/^(n[uú]mero|number|collector|collector number|cn|n[ºo°])$/i, z:/^(se[cç][aã]o|zona|board|section|tipo de lista)$/i};
+const HEAD = {q:/^(qtd|qtde|quant|quantidade|qty|quantity|count|amount|owned|copies|total|n[ºo°]?\s*de\s*c[oó]pias|c[oó]pias|#)$/i, n:/^(nome|name|carta|card|card name|card_name|nome da carta|title)$/i, s:/^(set|cole[cç][aã]o|edi[cç][aã]o|edition|set code|set_code|expansion|c[oó]digo)$/i, c:/^(n[uú]mero|number|collector|collector number|collector_number|card number|cn|n[ºo°])$/i, z:/^(se[cç][aã]o|zona|board|section|tipo de lista)$/i};
 function splitCSV(line, d){
   const out = []; let cur = '', q = false;
   for (let i = 0; i < line.length; i++) { const ch = line[i];
@@ -42,7 +42,7 @@ function rowsToEntries(rows, out){
     else { const qi = cells.findIndex(c => /^\d{1,3}x?$/i.test(c)); q = qi >= 0 ? parseInt(cells[qi]) : NaN;
       name = cells.filter((c,i) => i !== qi && c && !/^\d+$/.test(c) && !/^[A-Za-z0-9]{2,5}$/.test(c)).sort((a,b) => b.length - a.length)[0] || '';
       if (!name) name = cells.filter((c,i) => i !== qi && c && !/^\d+$/.test(c))[0] || ''; }
-    if (!name) return; if (!(q > 0)) q = 1;
+    if (!name) return; if (map && map.q != null && cells[map.q] !== '' && !(q > 0)) return; if (!(q > 0)) q = 1;
     const c = cleanName(name); out.push({name:c.name, q, set:set || c.set, cn:cn || c.cn, zone:z});
   });
 }
