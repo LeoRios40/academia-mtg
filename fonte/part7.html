@@ -1477,6 +1477,17 @@ body[data-sec="mesa"] .view-head h1,body[data-sec="construir"] .view-head h1,bod
 .unt-help ol{margin:4px 0 0;padding-left:1.2em;display:flex;flex-direction:column;gap:8px}
 .unt-bm{cursor:grab;margin-top:4px}
 .unt-help kbd{padding:1px 6px;border:1px solid var(--line);border-radius:5px;background:var(--surface);font-size:.85em}
+
+.an-card,.an-done{padding:14px;border-radius:12px;border:2px solid var(--sec,var(--accent));background:color-mix(in srgb,var(--sec,var(--accent)) 12%,var(--surface))}
+.an-t{font-family:var(--f-display);font-size:1.15rem}
+.an-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;counter-reset:an}
+.an-steps li{counter-increment:an;display:flex;flex-direction:column;gap:2px;padding:8px 10px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);font-size:.9rem}
+.an-steps li::before{content:counter(an);display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#1b1408;font-weight:800;font-size:.85rem;margin-bottom:2px}
+.an-steps small{color:var(--muted);font-size:.8rem;line-height:1.25}
+.an-banner{display:flex;flex-direction:column;gap:4px;align-items:flex-start;padding:12px 14px;margin-bottom:10px;border-radius:12px;border-left:4px solid var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.an-banner span{font-size:.9rem;color:var(--muted)}
+.an-done{margin-bottom:12px}
+@media (max-width:420px){.an-steps{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -1541,7 +1552,7 @@ body[data-sec="mesa"] .view-head h1,body[data-sec="construir"] .view-head h1,bod
 <footer class="foot">
   <div class="foot-line">
     <span class="credit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 3c-4 2-9 7-11 10l2 2c3-2 8-7 10-11z"/><path d="M8 14c-2 0-4 1.5-4 4 0 1-1 2-2 2 2 1.5 6 1 7-1.5.5-1.2.3-2.3-.5-3"/></svg>Criado por Leonardo Rios</span>
-    <span class="cn">ACD <i>•</i> PT-BR <button class="foot-link" onclick="openUpdates(false)">Atualizações (versão <span id="verFoot">3.9</span>)</button></span>
+    <span class="cn">ACD <i>•</i> PT-BR <button class="foot-link" onclick="openUpdates(false)">Atualizações (versão <span id="verFoot">4.0</span>)</button></span>
   </div>
   <p>Ferramenta feita para ajudar no aprendizado de Magic. Imagens das cartas: Scryfall. Magic: The Gathering © Wizards of the Coast. Projeto educativo, sem fins comerciais.</p>
 </footer>
