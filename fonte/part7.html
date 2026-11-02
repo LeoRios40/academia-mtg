@@ -1470,6 +1470,13 @@ body[data-sec="mesa"] .view-head h1,body[data-sec="construir"] .view-head h1,bod
 .upd-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + 24px + env(safe-area-inset-bottom,0px));z-index:270;width:min(92vw,480px);display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:14px;background:var(--surface);border:2px solid var(--accent);box-shadow:0 12px 40px rgba(0,0,0,.4);color:var(--ink)}
 .upd-bar span{font-size:.92rem;color:var(--muted)}
 @media (min-width:821px){.upd-bar{bottom:24px}}
+
+.unt-box{padding:12px;border:2px solid var(--accent);border-radius:12px;background:color-mix(in srgb,var(--accent) 10%,var(--surface))}
+.unt-box input{width:100%}
+.unt-help{margin-top:8px;padding:12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);font-size:.93rem}
+.unt-help ol{margin:4px 0 0;padding-left:1.2em;display:flex;flex-direction:column;gap:8px}
+.unt-bm{cursor:grab;margin-top:4px}
+.unt-help kbd{padding:1px 6px;border:1px solid var(--line);border-radius:5px;background:var(--surface);font-size:.85em}
 </style>
 </head>
 <body>
@@ -1534,7 +1541,7 @@ body[data-sec="mesa"] .view-head h1,body[data-sec="construir"] .view-head h1,bod
 <footer class="foot">
   <div class="foot-line">
     <span class="credit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 3c-4 2-9 7-11 10l2 2c3-2 8-7 10-11z"/><path d="M8 14c-2 0-4 1.5-4 4 0 1-1 2-2 2 2 1.5 6 1 7-1.5.5-1.2.3-2.3-.5-3"/></svg>Criado por Leonardo Rios</span>
-    <span class="cn">ACD <i>•</i> PT-BR <button class="foot-link" onclick="openUpdates(false)">Atualizações (versão <span id="verFoot">3.8</span>)</button></span>
+    <span class="cn">ACD <i>•</i> PT-BR <button class="foot-link" onclick="openUpdates(false)">Atualizações (versão <span id="verFoot">3.9</span>)</button></span>
   </div>
   <p>Ferramenta feita para ajudar no aprendizado de Magic. Imagens das cartas: Scryfall. Magic: The Gathering © Wizards of the Coast. Projeto educativo, sem fins comerciais.</p>
 </footer>
