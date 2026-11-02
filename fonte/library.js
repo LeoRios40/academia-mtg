@@ -15,7 +15,7 @@ const SECTIONS = {
   mesa:{kind:'tr', h:'Na mesa', p:'Ferramentas para a partida de verdade com os amigos: contador de vida, sorteio de mesas e torneio, árbitro de bolso e calculadora de combate.',
     tabs:[['vida','Contador de vida'],['grupo','Grupo e torneio'],['juiz','Árbitro de bolso'],['calc','Calculadora de combate']]}
 };
-const DECK_R = () => ({importar:renderImport, otimizar:renderOptFlow, entenda:renderEntenda, gerar:renderAssist, analise:renderAnalyzer, mao:renderHand, prob:renderProb, base:renderManaBase, sugestoes:renderSuggest,
+let DECK_R = () => ({importar:renderImport, otimizar:renderOptFlow, entenda:renderEntenda, gerar:renderAssist, analise:renderAnalyzer, mao:renderHand, prob:renderProb, base:renderManaBase, sugestoes:renderSuggest,
   colecao:renderColl, desejos:renderWish, orcamento:renderPrice, preco:renderPrice, comparar:renderCompare, desafios:renderChal, famosos:renderFamous, arena:renderArenaHub, guia:renderGuide,
   biblioteca:renderLib, link:renderLink, proxies:renderProxies, side:renderSide, testar:renderDuelTest, acoll:renderACollection});
 const TR_R = () => ({surv:renderSurv, custom:renderCustomPuz, criar:renderPuzCreator, duelo:renderDuel, sim:renderSim, puz:renderPuz, bloq:renderBlk, ler:renderRead, mull:renderMull, pilha:renderStack, draft:renderDraft, vida:renderLifeIntro, grupo:renderGroup, juiz:renderJudge});

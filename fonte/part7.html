@@ -1446,6 +1446,30 @@ body[data-sec="mesa"] .view-head h1,body[data-sec="construir"] .view-head h1,bod
 .inst-ic{width:56px;height:56px;border-radius:14px;overflow:hidden;flex:none;background:#110e17;border:2px solid #000}.inst-ic img{width:100%;height:100%}
 .inst-t{flex:1 1 260px;display:flex;flex-direction:column;gap:3px}.inst-t b{font-family:var(--f-display);font-size:1.1rem}.inst-t small{color:var(--muted);font-size:.86rem;line-height:1.35}
 .inst-b{display:flex;gap:8px;align-items:center}
+
+.gd-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px}
+.gd-tab{display:flex;flex-direction:column;gap:3px;text-align:left;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);cursor:pointer;color:var(--ink)}
+.gd-tab b{font-family:var(--f-display);font-size:1.02rem;font-weight:600}
+.gd-tab small{color:var(--muted);font-size:.82rem;line-height:1.3}
+.gd-tab[aria-pressed="true"]{background:color-mix(in srgb,var(--sec) 18%,var(--surface));border-color:var(--sec);box-shadow:inset 0 0 0 1px var(--sec)}
+.gd-steps{display:grid;gap:14px;counter-reset:gd}
+.gd-step{display:grid;grid-template-columns:minmax(0,360px) 1fr;gap:16px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2)}
+.gd-img{display:flex;justify-content:center}
+.gd-img svg.gi{width:100%;max-width:360px;height:auto;display:block;filter:drop-shadow(0 6px 14px rgba(0,0,0,.25))}
+.gd-img svg.gi-ph{max-width:200px}
+.gd-txt{display:flex;flex-direction:column;gap:6px}
+.gd-txt b{font-family:var(--f-display);font-size:1.12rem}
+.gd-txt p{margin:0;line-height:1.5}
+.gd-n{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--accent);color:#1b1408;font-weight:800;font-size:1rem}
+.gd-link{align-self:flex-start}
+.gi-tap circle:first-child{animation:giPulse 1.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes giPulse{0%,100%{transform:scale(.7);opacity:.9}50%{transform:scale(1.25);opacity:.35}}
+@media (prefers-reduced-motion:reduce){.gi-tap circle:first-child{animation:none}}
+@media (max-width:640px){.gd-step{grid-template-columns:minmax(0,1fr);padding:10px}}
+.gd-step>*{min-width:0}.gd-img svg{overflow:hidden}
+.upd-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + 24px + env(safe-area-inset-bottom,0px));z-index:270;width:min(92vw,480px);display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:14px;background:var(--surface);border:2px solid var(--accent);box-shadow:0 12px 40px rgba(0,0,0,.4);color:var(--ink)}
+.upd-bar span{font-size:.92rem;color:var(--muted)}
+@media (min-width:821px){.upd-bar{bottom:24px}}
 </style>
 </head>
 <body>
@@ -1510,7 +1534,7 @@ body[data-sec="mesa"] .view-head h1,body[data-sec="construir"] .view-head h1,bod
 <footer class="foot">
   <div class="foot-line">
     <span class="credit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 3c-4 2-9 7-11 10l2 2c3-2 8-7 10-11z"/><path d="M8 14c-2 0-4 1.5-4 4 0 1-1 2-2 2 2 1.5 6 1 7-1.5.5-1.2.3-2.3-.5-3"/></svg>Criado por Leonardo Rios</span>
-    <span class="cn">ACD <i>•</i> PT-BR <button class="foot-link" onclick="openUpdates(false)">Atualizações (versão <span id="verFoot">3.7</span>)</button></span>
+    <span class="cn">ACD <i>•</i> PT-BR <button class="foot-link" onclick="openUpdates(false)">Atualizações (versão <span id="verFoot">3.8</span>)</button></span>
   </div>
   <p>Ferramenta feita para ajudar no aprendizado de Magic. Imagens das cartas: Scryfall. Magic: The Gathering © Wizards of the Coast. Projeto educativo, sem fins comerciais.</p>
 </footer>
