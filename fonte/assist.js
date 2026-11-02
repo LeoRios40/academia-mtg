@@ -4,8 +4,8 @@
 const AF = {
   commander:{n:'Commander', d:'Mesa física · 100 cartas, 1 de cada, com comandante · 40 de vida', size:100, single:true, cmd:true, arena:false, q:'f:commander'},
   brawl:{n:'Brawl no Arena', d:'O Commander do Arena · 100 cartas, 1 de cada, com comandante', size:100, single:true, cmd:true, arena:true, q:'f:brawl'},
-  standardbrawl:{n:'Brawl Padrão', d:'Arena · 60 cartas, 1 de cada, coleções recentes', size:60, single:true, cmd:true, arena:true, q:'f:standardbrawl'},
-  standard:{n:'Padrão', d:'Arena e mesa · 60 cartas, até 4 cópias, coleções recentes', size:60, arena:true, q:'f:standard'},
+  standardbrawl:{n:'Brawl Padrão', d:'Arena · com comandante · 60 cartas, 1 de cada, coleções recentes (não é o Padrão comum)', size:60, single:true, cmd:true, arena:true, q:'f:standardbrawl'},
+  standard:{n:'Padrão', d:'Arena e mesa · 60 cartas, até 4 cópias de cada, coleções recentes', size:60, arena:true, q:'f:standard'},
   historic:{n:'Histórico', d:'Arena · 60 cartas, coleção maior do Arena', size:60, arena:true, q:'f:historic'},
   pioneer:{n:'Pioneer', d:'Mesa (no Arena: Explorer) · 60 cartas, coleções desde 2012', size:60, arena:false, q:'f:pioneer'},
   pauper:{n:'Pauper', d:'Mesa · 60 cartas, só cartas comuns · barato', size:60, arena:false, q:'f:pauper'},
@@ -150,9 +150,10 @@ function renderAssist(){
   $$('[data-ass]').forEach(b => b.onclick = () => { asd.step = +b.dataset.ass; renderAssist(); });
   bindAssist();
 }
+function asFmtKeys(){ return Object.keys(AF); }
 function asS1(){
   return `<span class="q-t">Em que tipo de jogo você vai usar o deck?</span>
-    <div class="pick as-fmt">${Object.entries(AF).map(([k,f]) => `<button data-af="${k}" aria-pressed="${asd.fmt===k}"><b>${f.n}${f.arena ? ' <span class="pill good">Arena</span>' : ''}</b><small>${f.d}</small></button>`).join('')}</div>
+    <div class="pick as-fmt">${asFmtKeys().map(k => { const f = AF[k]; return `<button data-af="${k}" aria-pressed="${asd.fmt===k}"><b>${f.n}${f.arena ? ' <span class="pill good">Arena</span>' : ''}</b><small>${f.d}</small><span class="pill ${f.cmd ? 'warn' : ''}" style="align-self:flex-start;margin-top:4px">${f.cmd ? 'Com comandante' : 'Sem comandante'}</span></button>`; }).join('')}</div>
     <p class="muted" style="font-size:.88rem">Commander não existe no Arena com esse nome: lá ele se chama Brawl. <b>Vai jogar no Arena? Escolha Brawl</b>, assim só entram cartas que existem no Arena. Os formatos de mesa geram a lista do mesmo jeito, para montar com cartas físicas ou importar em sites como Moxfield.</p>`;
 }
 function asS2(){

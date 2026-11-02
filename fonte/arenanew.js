@@ -20,13 +20,14 @@ function anCardHTML(){
     $('#anGo').onclick = anStart;
   };
 })();
-/* passo 1: só formatos do Arena */
+/* passo 1: só formatos do Arena, primeiro os sem comandante */
 (function(){
+  const fk = asFmtKeys;
+  asFmtKeys = () => asd.arenaOnly ? fk().filter(k => AF[k].arena).sort((a, b) => (AF[a].cmd ? 1 : 0) - (AF[b].cmd ? 1 : 0)) : fk();
   const s1 = asS1;
   asS1 = function(){
     let h = s1(); if (!asd.arenaOnly) return h;
-    Object.keys(AF).filter(k => !AF[k].arena).forEach(k => { h = h.replace(new RegExp(`<button data-af="${k}"[\\s\\S]*?</button>`), ''); });
-    h = h.replace(/<p class="muted" style="font-size:\.88rem">Commander não existe[\s\S]*?<\/p>/, '<p class="muted" style="font-size:.88rem">Só aparecem formatos que existem no MTG Arena. Quer jogar Commander no Arena? Escolha <b>Brawl no Arena</b>.</p>');
+    h = h.replace(/<p class="muted" style="font-size:\.88rem">Commander não existe[\s\S]*?<\/p>/, '<p class="muted" style="font-size:.88rem">Só aparecem formatos que existem no MTG Arena. <b>Padrão</b> e <b>Histórico</b> não têm comandante. Os dois <b>Brawl</b> são com comandante (o Commander do Arena).</p>');
     return `<div class="an-banner"><b>Novo deck para o MTG Arena</b><span>Primeiro escolha o formato do Arena. Depois vêm as perguntas e, no fim, a lista para importar no Arena.</span><button class="btn small" id="anAll">Ver também formatos de mesa</button></div>` + h;
   };
   const s5 = asS5;
