@@ -89,3 +89,12 @@ async function checkNewVersion(){
   } catch(e) {}
 }
 setTimeout(checkNewVersion, 3500);
+/* ---------- aberto como arquivo: faixa com o link do site ---------- */
+(function(){
+  if (location.protocol !== 'file:') return;
+  try { if (sessionStorage.getItem('fileBarX')) return; } catch(e) {}
+  const el = document.createElement('div'); el.className = 'file-bar'; el.setAttribute('role', 'note');
+  el.innerHTML = `<span>Você está usando o arquivo baixado.</span><a href="${SITE}" target="_blank" rel="noopener">Abrir a versão online, sempre atualizada</a><button type="button" aria-label="Fechar aviso">✕</button>`;
+  document.body.prepend(el);
+  el.querySelector('button').onclick = () => { el.remove(); try { sessionStorage.setItem('fileBarX', '1'); } catch(e) {} };
+})();

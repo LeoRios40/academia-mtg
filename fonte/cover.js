@@ -145,7 +145,7 @@ function buildCover(){
       <div id="xPanel"></div>
     </section>
     <p style="text-align:center;margin-top:50px"><button class="cv-btn gold" id="cvEnter2">Entrar na Academia</button></p>
-    <p style="text-align:center;color:#8e84a5;font-size:.82rem;margin-top:18px">Criado por Leonardo Rios. Magic: The Gathering © Wizards of the Coast. Projeto educativo, sem fins comerciais.</p>
+    <p style="text-align:center;color:#8e84a5;font-size:.82rem;margin-top:18px">Criado por Leonardo Rios. Magic: The Gathering © Wizards of the Coast. Projeto educativo, sem fins comerciais.<br><a class="cv-site" href="${SITE}" target="_blank" rel="noopener">Abrir a Academia online: leorios40.github.io/academia-mtg</a></p>
   </div>`;
   const enter = () => { el.hidden = true; document.body.style.overflow = ''; stopSky(); sfx('win'); RENDER[currentView] && RENDER[currentView](); if (!S.tourAsked) { S.tourAsked = true; S.seenVer = CUR_VER; save(); setTimeout(startTour, 400); } else maybeShowUpdates(); };
   $('#cvEnter').onclick = enter; $('#cvEnter2').onclick = enter;
