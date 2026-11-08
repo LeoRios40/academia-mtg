@@ -17,7 +17,7 @@ function untBuild(coll, cards, loc){
   return Object.keys(U).sort().map(n => Math.min(4, U[n]) + ' ' + n).join('\n');
 }
 /* código que roda NA página do Untapped (favorito ou console): lá o navegador permite ler a coleção */
-function untRemote(target){
+function untRemote(target, isFile){
   var m = /\/profile\/([a-f0-9-]{20,})\/([A-Za-z0-9]{6,})/.exec(location.href);
   var box = document.createElement('div');
   box.style.cssText = 'position:fixed;inset:auto 16px 16px auto;z-index:2147483647;width:min(92vw,440px);background:#16131d;color:#f3ead6;border:2px solid #d9ac4e;border-radius:14px;padding:16px;font:15px/1.45 system-ui,sans-serif;box-shadow:0 12px 40px rgba(0,0,0,.6)';
@@ -38,14 +38,17 @@ function untRemote(target){
       var n = String(c.name || L[c.titleId] || '').replace(/<[^>]+>/g, '').trim(); if (n) U[n] = (U[n] || 0) + (e.quantity || 0); });
     var t = Object.keys(U).sort().map(function(n){ return Math.min(4, U[n]) + ' ' + n; }).join('\n');
     if (!t) throw new Error('vazia');
-    say('Encontrei <b>' + Object.keys(U).length + ' cartas diferentes</b>.<br><a id="apGo" href="' + target + '#untcoll=' + encodeURIComponent(t) + '" target="_blank" rel="noopener" style="display:inline-block;margin:10px 0 6px;padding:10px 16px;border-radius:10px;background:#d9ac4e;color:#1b1408;font-weight:800;text-decoration:none">Abrir na Academia e adicionar</a><br><small>Se não abrir, copie a lista e cole na Academia em Arena e coleção → Coleção do Arena.</small><textarea readonly style="width:100%;height:90px;margin-top:8px;font-size:12px"></textarea><button id="apCp">Copiar lista</button> <button id="apX">Fechar</button>');
+    var B = 'display:inline-block;margin:10px 6px 6px 0;padding:10px 16px;border-radius:10px;font-weight:800;text-decoration:none;cursor:pointer;border:0;font-size:15px';
+    var go = '<a id="apGo" href="' + target + '#untcoll=' + encodeURIComponent(t) + '" target="_blank" rel="noopener" style="' + B + ';background:' + (isFile ? '#3a3346;color:#f3ead6' : '#d9ac4e;color:#1b1408') + '">' + (isFile ? 'Ou abrir no site' : 'Abrir na Academia e adicionar') + '</a>';
+    var cp = '<button id="apCp" style="' + B + ';background:' + (isFile ? '#d9ac4e;color:#1b1408' : '#3a3346;color:#f3ead6') + '">Copiar lista</button>';
+    say('Encontrei <b>' + Object.keys(U).length + ' cartas diferentes</b>.<br>' + (isFile ? cp + go + '<br><small>Você usa a Academia pelo <b>arquivo HTML</b>: copie a lista, volte para o arquivo e, em Arena e coleção → Coleção do Arena, toque em <b>Colar a lista copiada</b>.</small>' : go + cp + '<br><small>Se não abrir, copie a lista e cole na Academia em Arena e coleção → Coleção do Arena.</small>') + '<textarea readonly style="width:100%;height:80px;margin-top:8px;font-size:12px"></textarea><button id="apX">Fechar</button>');
     box.querySelector('textarea').value = t;
-    box.querySelector('#apCp').onclick = function(){ var ta = box.querySelector('textarea'); ta.select(); try { navigator.clipboard.writeText(t); } catch(e){ document.execCommand('copy'); } this.textContent = 'Copiada!'; };
+    box.querySelector('#apCp').onclick = function(){ var ta = box.querySelector('textarea'); ta.select(); var me = this; var ok = function(){ me.textContent = 'Lista copiada! Agora cole na Academia'; }; try { navigator.clipboard.writeText(t).then(ok, function(){ document.execCommand('copy'); ok(); }); } catch(e){ document.execCommand('copy'); ok(); } };
     box.querySelector('#apX').onclick = function(){ box.remove(); };
   }).catch(function(){ say('Não consegui ler a coleção. Confira se o perfil está <b>Público</b> no Untapped e se você está na página da coleção, recarregue e tente de novo. <button id="apX" style="margin-top:10px">Fechar</button>'); box.querySelector('#apX').onclick = function(){ box.remove(); }; });
 }
 function untTarget(){ return /^https?:/.test(location.protocol) ? location.origin + location.pathname : SITE; }
-function untCode(){ return '(' + untRemote.toString() + ')(' + JSON.stringify(untTarget()) + ')'; }
+function untCode(){ return '(' + untRemote.toString() + ')(' + JSON.stringify(untTarget()) + ',' + (location.protocol === 'file:') + ')'; }
 function untBookmarklet(){ return 'javascript:' + encodeURIComponent(untCode()); }
 /* tentativa direta (funciona se o Untapped liberar o acesso para outros sites) */
 async function untDirect(ids, st){
@@ -73,7 +76,7 @@ function untHelpHTML(){
     const anchor = $('#deckBody .gd-link') || h;
     anchor.insertAdjacentHTML('afterend', `<div class="unt-box stack-v"><label class="f" for="untUrl"><b>Cole aqui a URL da sua coleção do Untapped</b>
       <input type="url" id="untUrl" inputmode="url" autocomplete="off" placeholder="https://mtga.untapped.gg/profile/…/collection"></label>
-      <div class="row-h"><button class="btn primary" id="untGo">Buscar minha coleção</button><span class="muted" id="untSt" style="font-size:.9rem"></span></div><div id="untOut"></div></div>`);
+      <div class="row-h"><button class="btn primary" id="untGo">Buscar minha coleção</button><button class="btn" id="untPaste" title="Depois de usar o favorito no Untapped e tocar em Copiar lista">Colar a lista copiada</button><span class="muted" id="untSt" style="font-size:.9rem"></span></div><div id="untOut"></div></div>`);
     const st = m => { const e = $('#untSt'); if (e) e.textContent = m; };
     const go = async raw => {
       const ids = untParse(raw);
@@ -90,6 +93,7 @@ function untHelpHTML(){
       }
     };
     if (S.untUrl) $('#untUrl').value = S.untUrl;
+    $('#untPaste').onclick = async () => { try { const t = (await navigator.clipboard.readText() || '').trim(); if (!t || /^https?:/i.test(t)) throw 0; $('#acTxt').value = t; st('Lista colada. Adicionando à coleção…'); $('#acAdd').click(); } catch(e) { const ta = $('#acTxt'); ta.scrollIntoView({block:'center'}); ta.focus(); toast('Aperte Ctrl+V (ou toque e segure → Colar) na caixa e depois em Adicionar à coleção.'); } };
     $('#untGo').onclick = () => go($('#untUrl').value.trim());
     $('#untUrl').onkeydown = e => { if (e.key === 'Enter') go(e.target.value.trim()); };
     /* se colarem o link na caixa de lista, também funciona */
