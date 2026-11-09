@@ -20,7 +20,7 @@ const ST_ARENA_EX = {};
     const fill = L => { const el = $('#stArenaEx'); if (!el) return; el.innerHTML = L.length ? L.map(n => cardHTML(n, {showPt:false})).join('') : '<span class="muted">Não encontrei agora. Tente de novo com internet.</span>'; };
     if (ST_ARENA_EX[s.k]) return fill(ST_ARENA_EX[s.k]);
     let q = s.b.tribal ? `t:${(asd.a && asd.a.tribe) || 'elf'} t:creature` : s.b.q;
-    fetchQ(`(${q}) game:arena -t:basic`, 40).then(L => { const names = (L || []).map(c => c.name).filter(n => !s.ex.includes(n)).slice(0, 8); ST_ARENA_EX[s.k] = names; fill(names); }).catch(() => fill([]));
+    fetchQ(`(${q}) game:arena -t:basic`, 40).then(L => { const names = (L || []).filter(n => n && !s.ex.includes(n)).slice(0, 8); ST_ARENA_EX[s.k] = names; fill(names); }).catch(() => fill([]));
   };
 })();
 

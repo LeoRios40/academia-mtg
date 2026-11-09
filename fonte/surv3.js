@@ -76,9 +76,56 @@ const SHOP = {
 const meta = () => { const M = (S.survMeta = S.survMeta || {cen:0}); M.cen = M.cen || 0; M.v3 = M.v3 || {up:{}, chars:{R:1}, best:{}, runs:0, hard:false}; return M; };
 
 /* ---------- arte: magos ---------- */
+
+/* visuais liberados por conquistas (mudam túnica, detalhes e capa) */
+const COS = {
+  sombra:{n:'Manto da Sombra', robe:'#2a2433', trim:'#9a7fb0', cape:'#120e18'},
+  ouro:{n:'Vestes Douradas', robe:'#c99a2e', trim:'#fff2a8', cape:'#6a4a12', gem:'#fff2a8'},
+  esmeralda:{n:'Seda Esmeralda', robe:'#1f8a5a', trim:'#bff0d0', cape:'#0e3a26'},
+  celeste:{n:'Céu Estrelado', robe:'#2a3a8a', trim:'#ffe680', cape:'#0e1440', gem:'#bff0ff'},
+  rubi:{n:'Chama Rubi', robe:'#a8142a', trim:'#ffb04a', cape:'#3a0610', gem:'#ff6a3a'},
+  vazio:{n:'Eco do Vazio', robe:'#3a1a5a', trim:'#c070ff', cape:'#140820', gem:'#e0a0ff'}
+};
+const ACH = [
+  {k:'t3', n:'Primeiros passos', d:'Sobreviva 3 minutos.', t:R => R.t >= 180},
+  {k:'boss1', n:'Caçador de reis', d:'Derrote o primeiro chefe.', t:R => R.bossKills >= 1},
+  {k:'mago', n:'Despertar', d:'Chegue à forma de Mago.', t:R => R.tier >= 1, cos:'sombra'},
+  {k:'evo1', n:'Lendário', d:'Evolua uma mágica.', t:R => Object.keys(R.evo).length >= 1, cos:'esmeralda'},
+  {k:'nodmg', n:'Intocável', d:'Fique 60 segundos sem levar dano (depois do primeiro minuto).', t:R => R.t > 60 && R.t - (R.lastHurt || 0) >= 60},
+  {k:'arqui', n:'Arquimago', d:'Chegue à forma de Arquimago.', t:R => R.tier >= 2, cos:'celeste'},
+  {k:'k1000', n:'Mil criaturas', d:'Derrote 1.000 criaturas numa partida.', t:R => R.kills >= 1000, cos:'rubi'},
+  {k:'evo3', n:'Grimório completo', d:'Evolua 3 mágicas na mesma partida.', t:R => Object.keys(R.evo).length >= 3},
+  {k:'pw', n:'Centelha desperta', d:'Vire Planeswalker.', t:R => R.tier >= 3, cos:'ouro'},
+  {k:'win', n:'Planinauta', d:'Derrote o Devorador do Vazio.', t:R => R.bossKills >= 5 && R.bossIdx >= 5, cos:'vazio'},
+  {k:'hard', n:'Coragem', d:'Derrote um chefe no modo difícil.', t:R => R.hard && R.bossKills >= 1},
+  {k:'all5', n:'Conselho das cores', d:'Libere os 5 magos.', t:() => Object.keys(meta().v3.chars).length >= 5}
+];
+/* falas de cada mago ao chegar em cada plano, e o final de cada um */
+const STORY = {
+  R:['Dominária? Ótimo. Árvores queimam bonito.', 'Innistrad... nem a minha chama espanta esse frio.', 'Ravnica: dez guildas e nenhuma vai me dar ordens.', 'Pedras flutuando em Zendikar. Vou explodir umas para ver se caem.', 'A Fenda do Vazio. Que bom: sem nada aqui, eu sou a única luz.'],
+  U:['Dominária. Cada criatura aqui é uma pergunta. Eu tenho as respostas.', 'Innistrad. Os mortos não pensam: isso me dá vantagem.', 'Ravnica é um quebra-cabeça de guildas. Adoro quebra-cabeças.', 'Zendikar muda o tempo todo. Vou prever o próximo movimento.', 'O Vazio não tem lógica. Vou ensinar uma a ele.'],
+  B:['Dominária tem vida demais. Vou equilibrar isso.', 'Innistrad... finalmente, um lugar que entende a morte.', 'Em Ravnica, todo mundo tem um preço. O meu é a sua alma.', 'Zendikar esconde tesouros em ruínas. E cadáveres. Eu fico com os dois.', 'O Vazio quer tudo. Eu também. Vamos ver quem leva.'],
+  G:['Dominária. A floresta me chama pelo nome.', 'Innistrad. Até aqui as raízes resistem à escuridão.', 'Ravnica cobriu a natureza com pedra. Vou devolver o verde.', 'Zendikar é selvagem. Como eu.', 'No Vazio nada cresce... por enquanto.'],
+  W:['Dominária. Vou proteger quem não pode se proteger.', 'Innistrad precisa de luz. Eu trouxe bastante.', 'Ravnica: leis, guildas e ordem. Eu sou a ordem.', 'Zendikar está em perigo. A luz vai guiar o caminho.', 'O Vazio devora a luz. Vamos ver se aguenta a minha.']
+};
+const ENDS = {
+  R:'Ignis sorri diante das cinzas do Devorador. A centelha dele arde mais forte que nunca. Próximo destino? Qualquer lugar que ainda não pegou fogo.',
+  U:'Maré anota a última fórmula: o Vazio tinha uma lógica, afinal. Agora, nenhum plano guarda segredos para ela.',
+  B:'Morva absorve o que restou do Devorador. O Vazio agora obedece a quem conhece a morte melhor do que ninguém.',
+  G:'Tarn planta uma semente onde o Devorador caiu. Em breve, até o Vazio terá uma floresta.',
+  W:'Lúmen ergue o cajado e a luz atravessa a Fenda. Os planos estão seguros, enquanto ela estiver de vigia.'
+};
+const BEAST = {
+  goblin:['Goblin Saqueador','Rápido, barulhento e sempre em bando.'], aranha:['Aranha Tecelã','Ataca de surpresa; muito rápida.'], slime:['Lodo Verde','Ao morrer, se divide em dois menores.'],
+  zumbi:['Zumbi Errante','Lento, mas aguenta muito dano.'], morcego:['Morcego Vampírico','Voa em zigue-zague.'], esqueleto:['Esqueleto Guerreiro','O soldado padrão dos mortos.'],
+  cultista:['Cultista da Guilda','Para de longe e lança bolas de fogo.'], golem:['Golem de Pedra','Enorme e resistente; desvie.'], elemental:['Elemental de Fogo','Rápido e quente.'],
+  espirito:['Espírito Perdido','Atravessa o campo flutuando.'],
+  reiGoblin:['Rei Goblin','Chefe: corre em linha reta (marca vermelha) e chama goblins.'], lich:['Lich Ancestral','Chefe: círculos de morte e esqueletos.'],
+  golemRei:['Colosso da Guilda','Chefe: anel de impacto e rajada de pedras.'], dragao:['Dragão Ancião','Chefe: sopro de fogo em cone e bolas de fogo.'], devorador:['Devorador do Vazio','Chefe final: espiral, círculos, anel e espíritos.']
+};
 const SPR = {};
-function drawMage(c, tier, f){
-  const m = MAGES[c], cv = mk(72, 80), g = cv.getContext('2d'), cx = 36, by = 74;
+function drawMage(c, tier, f, cos){
+  const m = Object.assign({}, MAGES[c], COS[cos] || {}), cv = mk(72, 80), g = cv.getContext('2d'), cx = 36, by = 74;
   const bob = [0, -1.5, 0, -1.5][f], leg = [0, 3, 0, -3][f];
   g.lineJoin = 'round'; g.lineCap = 'round'; g.strokeStyle = OL; g.lineWidth = 2.2;
   g.translate(0, bob);
@@ -126,9 +173,10 @@ function drawMage(c, tier, f){
   if (tier >= 3){ g.save(); g.shadowColor = m.gem; g.shadowBlur = 10; g.fillStyle = '#ffe680'; g.strokeStyle = OL; g.lineWidth = 1.5; star(g, cx, hy - 26 - (c === 'R' ? 22 : 0), 4.5, 2, 5); fs(g); g.restore(); }
   return cv;
 }
-function mageSpr(c, tier){
-  const k = 'm' + c + tier; if (SPR[k]) return SPR[k];
-  const fr = [0, 1, 2, 3].map(f => drawMage(c, tier, f));
+function mageSpr(c, tier, cos){
+  cos = cos === undefined ? (R ? R.cos : (meta().v3.cos || {})[c]) : cos;
+  const k = 'm' + c + tier + (cos || ''); if (SPR[k]) return SPR[k];
+  const fr = [0, 1, 2, 3].map(f => drawMage(c, tier, f, cos));
   return (SPR[k] = {fr, fl: fr.map(flashOf)});
 }
 /* ---------- arte: inimigos ---------- */
@@ -298,7 +346,7 @@ function newRun(o){
   R = {mage:o.c, t:0, kills:0, lvl:1, xp:0, need:6, hp:100, maxhp:100, tier:0, x:0, y:0, vx:0, vy:0, face:1, anim:0, inv:0, dashCd:0, dashT:0, dx:0, dy:0,
     w:{}, pas:{}, evo:{}, en:[], pr:[], ep:[], gems:[], items:[], parts:[], nums:[], fx:[], tele:[], props:{}, biome:0, bossIdx:0, boss:null, bossDue:150,
     spawnAcc:0, eliteT:55, ult:0, ultMax:100, cam:{x:0, y:0, sh:0}, paused:false, modal:null, over:false, hard, rer:(M.v3.up.rerrolar || 0), revive:(M.v3.up.renascer || 0),
-    lite:!!S.lite, q:S.lite ? 0 : 1, ftAvg:16, fpsLowT:0, banner:null, endless:false, cenRun:0, bossKills:0, gemTotal:0, chests:0};
+    kt:{}, achNew:[], cos:(meta().v3.cos || {})[o.c] || '', lastHurt:0, lite:!!S.lite, q:S.lite ? 0 : 1, ftAvg:16, fpsLowT:0, banner:null, endless:false, cenRun:0, bossKills:0, gemTotal:0, chests:0};
   R.w[MAGES[o.c].w] = {l:1, t:0, s:{}};
   stats(); R.hp = R.maxhp;
   return R;
@@ -364,7 +412,7 @@ function hit(e, dmg, kx, ky, col){
   sfx('hit'); if (e.hp <= 0) kill(e);
 }
 function kill(e){
-  if (e.dead) return; e.dead = true; R.kills++; R.ult = Math.min(R.ultMax, R.ult + (e.boss ? 40 : e.elite ? 10 : .9)); sfx('kill');
+  if (e.dead) return; e.dead = true; R.kills++; R.kt[e.k] = (R.kt[e.k] || 0) + 1; R.ult = Math.min(R.ultMax, R.ult + (e.boss ? 40 : e.elite ? 10 : .9)); sfx('kill');
   parts(e.x, e.y, e.boss ? '#f6c945' : COLHEX[['R', 'G', 'B', 'U', 'W'][R.biome]] || '#fff', e.boss ? 60 : e.elite ? 24 : 7, e.boss ? 320 : 150, .5, e.boss ? 5 : 3);
   const v = e.xp; R.gems.push({x:e.x, y:e.y, v, mag:false});
   if (EN[e.k].split && !e.small){ for (let i = 0; i < 2; i++) spawn('slime', e.x + (i ? 10 : -10), e.y, {small:1}); }
@@ -373,10 +421,10 @@ function kill(e){
   if (e.elite) R.items.push({k:'bau', x:e.x, y:e.y});
   if (e.boss){ R.items.push({k:'bau', x:e.x, y:e.y}); R.items.push({k:'cen', x:e.x - 20, y:e.y, v:15}); R.bossKills++; R.cam.sh = 14; sfx('boom');
     if (R.boss === e){ R.boss = null;
-      if (!R.endless){ R.bossIdx++; if (R.bossIdx >= 5){ setTimeout(() => victory(), 900); } else { R.biome = R.bossIdx; R.bossDue = R.t + 150; R.props = {}; banner('Planinauta! Novo plano: ' + BIOMES[R.biome].n, 3); musStart(); } } } }
+      if (!R.endless){ R.bossIdx++; if (R.bossIdx >= 5){ setTimeout(() => victory(), 900); } else { R.biome = R.bossIdx; R.bossDue = R.t + 150; R.props = {}; banner('Planinauta! Novo plano: ' + BIOMES[R.biome].n, 3); say(STORY[R.mage][R.biome]); musStart(); } } } }
 }
 function hurt(d){
-  if (R.inv > 0 || R.dashT > 0 || R.over) return; d = Math.max(1, d - R.st.armor); R.hp -= d; R.inv = .55; R.hurtF = .25; R.cam.sh = Math.max(R.cam.sh, 5); sfx('hurt');
+  if (R.inv > 0 || R.dashT > 0 || R.over) return; d = Math.max(1, d - R.st.armor); R.hp -= d; R.lastHurt = R.t; R.inv = .55; R.hurtF = .25; R.cam.sh = Math.max(R.cam.sh, 5); sfx('hurt');
   try { if (navigator.vibrate && S.svVib !== false) navigator.vibrate(30); } catch(e){}
   if (R.hp <= 0){ if (R.revive > 0){ R.revive--; R.hp = R.maxhp / 2; R.inv = 2.5; banner('Segunda chance!', 2); nuke(9999, true); } else end(false); }
 }
@@ -436,6 +484,7 @@ function moveProj(dt){
 function update(dt){
   if (!R || R.paused || R.modal || R.over) return;
   R.t += dt; const st = R.st;
+  if (Math.floor(R.t) !== Math.floor(R.t - dt)) achCheck();
   /* jogador */
   let mx = 0, my = 0; const K = R.keys || {};
   if (K.l) mx -= 1; if (K.r) mx += 1; if (K.u) my -= 1; if (K.d) my += 1;
@@ -497,6 +546,11 @@ function item(it){
   else if (it.k === 'cen'){ R.cenRun += it.v || 1; sfx('gem'); }
   else if (it.k === 'bau'){ R.chests++; chest(); }
 }
+function say(t){ const ov = $('#g3'); if (!ov || !R) return; let el = $('#g3Say'); if (!el){ el = document.createElement('div'); el.id = 'g3Say'; el.className = 'g3-say'; ov.appendChild(el); }
+  el.innerHTML = `<img src="${portrait(R.mage, R.tier)}" alt=""><div><b>${MAGES[R.mage].n}</b><span>${t}</span></div>`; el.classList.remove('out'); el.hidden = false; clearTimeout(el._t); el._t = setTimeout(() => { el.classList.add('out'); setTimeout(() => { el.hidden = true; }, 400); }, 4200); }
+function achCheck(){ const V = meta().v3; V.ach = V.ach || {};
+  for (const a of ACH){ if (V.ach[a.k]) continue; let ok = false; try { ok = a.t(R); } catch(e){} if (!ok) continue;
+    V.ach[a.k] = today(); R.achNew.push(a.k); save(); sfx('chest'); banner('Conquista: ' + a.n + (a.cos ? ' · visual ' + COS[a.cos].n : ''), 2.6); } }
 function useUlt(){
   if (!R || R.ult < R.ultMax || R.modal || R.paused || R.over) return; R.ult = 0; const c = R.mage, D = R.st.dmg;
   R.cam.sh = 16; sfx('boom'); R.fx.push({k:'ult', c, x:R.x, y:R.y, t:1.1, T:1.1});
@@ -740,7 +794,7 @@ function start(o){
   cv = $('#g3Cv'); ctx = cv.getContext('2d'); resize(); bindInput(); hudIcons();
   $('#g3P').onclick = () => pause(true); $('#g3Ult').onclick = useUlt; $('#g3Dash').onclick = dash;
   ['g3Ult', 'g3Dash', 'g3P'].forEach(id => $('#' + id).addEventListener('pointerdown', e => e.stopPropagation()));
-  banner(BIOMES[0].n + ' · sobreviva!', 2.6); musStart();
+  banner(BIOMES[0].n + ' · sobreviva!', 2.6); setTimeout(() => say(STORY[o.c][0]), 1200); musStart();
   meta().v3.runs++; save();
   lastT = performance.now(); acc = 0; cancelAnimationFrame(raf); raf = requestAnimationFrame(loop);
 }
@@ -748,7 +802,7 @@ addEventListener('resize', () => { if (R && cv) resize(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden && R && !R.over && !R.paused && !R.modal) pause(true); });
 function victory(){
   if (!R || R.over) return; R.modal = 'vic'; sfx('evo');
-  showModal(`<div class="g3-mh"><b>Vitória!</b><small>Você derrotou o Devorador do Vazio em ${fmt(R.t)}.</small></div><p style="margin:0;text-align:center">Continuar no modo infinito? Os chefes voltam mais fortes e a recompensa de centelhas dobra.</p><div class="g3-row"><button class="btn primary" id="g3Inf">Modo infinito</button><button class="btn" id="g3Fin">Encerrar com vitória</button></div>`);
+  showModal(`<div class="g3-mh"><b>Vitória!</b><small>Você derrotou o Devorador do Vazio em ${fmt(R.t)}.</small></div><p class="g3-end"><img src="${portrait(R.mage, R.tier)}" alt="">${ENDS[R.mage]}</p><p style="margin:0;text-align:center">Continuar no modo infinito? Os chefes voltam mais fortes e a recompensa de centelhas dobra.</p><div class="g3-row"><button class="btn primary" id="g3Inf">Modo infinito</button><button class="btn" id="g3Fin">Encerrar com vitória</button></div>`);
   $('#g3Inf').onclick = () => { hideModal(); R.modal = null; R.endless = true; R.biome = 4; banner('Modo infinito!', 2); };
   $('#g3Fin').onclick = () => { hideModal(); R.modal = null; end(true); };
 }
@@ -757,10 +811,13 @@ function end(win){
   const M = meta(), B = M.v3.best, earn = Math.round(R.kills / 12 + R.t / 20 + R.bossKills * 25 + R.cenRun) * (R.hard ? 2 : 1) * (R.endless ? 2 : 1);
   M.cen += earn; const prev = B[R.mage] || 0, rec = R.t > prev; if (rec) B[R.mage] = Math.floor(R.t);
   if (win || R.bossKills >= 5){ M.v3.won = (M.v3.won || 0) + 1; }
-  M.v3.maxTier = Math.max(M.v3.maxTier || 0, R.tier); save();
+  M.v3.maxTier = Math.max(M.v3.maxTier || 0, R.tier); achCheck();
+  M.v3.kills = M.v3.kills || {}; Object.entries(R.kt).forEach(([k, n]) => { M.v3.kills[k] = (M.v3.kills[k] || 0) + n; });
+  M.v3.rank = (M.v3.rank || []).concat([{c:R.mage, t:Math.floor(R.t), lvl:R.lvl, tier:R.tier, k:R.kills, b:R.bossKills, w:Object.keys(R.w).map(k => R.evo[k] ? '★' + WPN[k].e : WPN[k].n + ' ' + R.w[k].l), d:today(), win:!!win, hard:R.hard}]).sort((a, b) => b.t - a.t).slice(0, 60);
+  save(); const pos = M.v3.rank.filter(x => x.c === R.mage).findIndex(x => x.t === Math.floor(R.t) && x.k === R.kills) + 1;
   if (typeof addXP === 'function') try { addXP(Math.min(40, 5 + Math.floor(R.t / 30))); } catch(e){}
   showModal(`<div class="g3-mh"><b>${win ? 'Vitória!' : 'Fim de jogo'}</b><small>${MAGES[R.mage].n} · ${TIERS[R.tier][1]} · ${BIOMES[R.biome].n}</small></div>
-    <div class="g3-res"><span><b>${fmt(R.t)}</b>sobrevivido${rec ? ' · recorde!' : ''}</span><span><b>${R.kills}</b>criaturas</span><span><b>${R.lvl}</b>nível</span><span><b>${R.bossKills}</b>chefes</span><span><b>+${earn} ✦</b>centelhas</span></div>
+    <div class="g3-res"><span><b>${fmt(R.t)}</b>sobrevivido${rec ? ' · recorde!' : ''}</span><span><b>${R.kills}</b>criaturas</span><span><b>${R.lvl}</b>nível</span><span><b>${R.bossKills}</b>chefes</span><span><b>+${earn} ✦</b>centelhas</span></div>${pos && pos <= 10 ? `<p class="g3-rk">🏆 ${pos}º lugar no ranking de ${MAGES[R.mage].n}</p>` : ''}${R.achNew.length ? `<div class="g3-achn">${R.achNew.map(k => { const a = ACH.find(x => x.k === k); return `<span>🏅 ${a.n}${a.cos ? ` · visual ${COS[a.cos].n}` : ''}</span>`; }).join('')}</div>` : ''}
     <div class="g3-row"><button class="btn primary" id="g3Again">Jogar de novo</button><button class="btn" id="g3Exit">Sair</button></div>`);
   $('#g3Again').onclick = () => { const c = R.mage; close(); start({c}); };
   $('#g3Exit').onclick = close;
@@ -772,7 +829,7 @@ function close(){
 }
 
 /* ---------- menu dentro da Academia ---------- */
-function portrait(c, tier, locked){ const s = mageSpr(c, tier).fr[0], cvp = mk(96, 96), g = cvp.getContext('2d'); const gr = g.createRadialGradient(48, 52, 4, 48, 52, 48); gr.addColorStop(0, rgba(MAGES[c].col, .55)); gr.addColorStop(1, rgba(MAGES[c].col, 0)); g.fillStyle = gr; g.fillRect(0, 0, 96, 96); g.fillStyle = 'rgba(0,0,0,.3)'; ell(g, 48, 86, 18, 5); g.fill(); g.drawImage(s, 12, 10); if (locked){ g.globalCompositeOperation = 'source-atop'; g.fillStyle = 'rgba(10,8,16,.82)'; g.fillRect(0, 0, 96, 96); } return cvp.toDataURL(); }
+function portrait(c, tier, locked, cos){ const s = mageSpr(c, tier, cos).fr[0], cvp = mk(96, 96), g = cvp.getContext('2d'); const gr = g.createRadialGradient(48, 52, 4, 48, 52, 48); gr.addColorStop(0, rgba(MAGES[c].col, .55)); gr.addColorStop(1, rgba(MAGES[c].col, 0)); g.fillStyle = gr; g.fillRect(0, 0, 96, 96); g.fillStyle = 'rgba(0,0,0,.3)'; ell(g, 48, 86, 18, 5); g.fill(); g.drawImage(s, 12, 10); if (locked){ g.globalCompositeOperation = 'source-atop'; g.fillStyle = 'rgba(10,8,16,.82)'; g.fillRect(0, 0, 96, 96); } return cvp.toDataURL(); }
 function heroArt(){
   const W0 = 720, H0 = 260, c = mk(W0, H0), g = c.getContext('2d'); const T = groundTile(4); for (let x = 0; x < W0; x += 256) for (let y = 0; y < H0; y += 256) g.drawImage(T, x, y);
   g.fillStyle = 'rgba(10,6,20,.35)'; g.fillRect(0, 0, W0, H0);
@@ -783,6 +840,16 @@ function heroArt(){
   const gr = g.createLinearGradient(0, 0, W0, 0); gr.addColorStop(0, 'rgba(10,6,20,.75)'); gr.addColorStop(.55, 'rgba(10,6,20,0)'); g.fillStyle = gr; g.fillRect(0, 0, W0, H0);
   return c.toDataURL('image/webp', .85);
 }
+function achHTML(){ const V = meta().v3, A = V.ach || {}, cur = (V.cos || {})[sel.c] || '', open = Object.keys(COS).filter(k => ACH.some(a => a.cos === k && A[a.k]));
+  return `<div class="g3-ach">${ACH.map(a => `<div class="g3-a ${A[a.k] ? 'ok' : ''}"><span>${A[a.k] ? '🏅' : '🔒'}</span><b>${a.n}</b><small>${a.d}</small>${a.cos ? `<small class="g3-cosn">Libera: ${COS[a.cos].n}</small>` : ''}</div>`).join('')}</div>
+    <b style="display:block;margin-top:10px">Visual de ${MAGES[sel.c].n}</b><div class="g3-coss"><button class="g3-cos" data-g3cos="" aria-pressed="${!cur}"><img src="${portrait(sel.c, 0, false, '')}" alt=""><small>Padrão</small></button>
+    ${Object.keys(COS).map(k => open.includes(k) ? `<button class="g3-cos" data-g3cos="${k}" aria-pressed="${cur === k}"><img src="${portrait(sel.c, 0, false, k)}" alt=""><small>${COS[k].n}</small></button>` : `<span class="g3-cos locked"><span>🔒</span><small>${COS[k].n}</small></span>`).join('')}</div>`; }
+function bestHTML(){ const K = meta().v3.kills || {};
+  return `<p class="muted" style="margin:0 0 8px">Criaturas que você já derrotou. As que faltam aparecem como sombra.</p><div class="g3-beast">${Object.keys(BEAST).map(k => { const n = K[k] || 0, img = enemySpr(k).fr[0], c = mk(80, 80), g = c.getContext('2d'), s = Math.min(76 / img.width, 76 / img.height); g.drawImage(img, 40 - img.width * s / 2, 40 - img.height * s / 2, img.width * s, img.height * s); if (!n){ g.globalCompositeOperation = 'source-atop'; g.fillStyle = '#14101c'; g.fillRect(0, 0, 80, 80); }
+    return `<div class="g3-bst ${n ? '' : 'locked'} ${EN[k].boss ? 'boss' : ''}"><img src="${c.toDataURL()}" alt=""><b>${n ? BEAST[k][0] : '???'}</b><small>${n ? BEAST[k][1] : 'Ainda não encontrado.'}</small>${n ? `<small class="g3-cnt">${n} derrotad${EN[k].boss ? 'o' + (n > 1 ? 's' : '') : 'os'}</small>` : ''}</div>`; }).join('')}</div>`; }
+function rankHTML(){ const c = sel.rc || sel.c, L = (meta().v3.rank || []).filter(x => x.c === c).slice(0, 10);
+  return `<div class="g3-row" style="justify-content:flex-start">${'RUBGW'.split('').map(k => `<button class="chip" data-g3rc="${k}" aria-pressed="${c === k}">${MAGES[k].n}</button>`).join('')}</div>
+    ${L.length ? `<ol class="g3-rank">${L.map(r => `<li><b>${fmt(r.t)}</b><span>Nível ${r.lvl} · ${TIERS[r.tier][1]} · ${r.k} criaturas · ${r.b} chefe${r.b === 1 ? '' : 's'}${r.win ? ' · 🏆 vitória' : ''}${r.hard ? ' · difícil' : ''}</span><small>${r.w.join(', ')} · ${r.d}</small></li>`).join('')}</ol>` : '<p class="muted">Nenhuma partida com este mago ainda.</p>'}`; }
 let HERO = null;
 function menu(box){
   if (!box) return; const M = meta(), V = M.v3;
@@ -799,6 +866,8 @@ function menu(box){
       <img src="${portrait(c, own ? Math.min(3, V.maxTier || 0) : 0, !own)}" alt="" width="96" height="96"><b>${m.n}</b><small>${m.t} · ${manaSym(c)}</small><small>${WPN[m.w].n} · ${m.bonus}</small><small class="g3-ult-n">Poder: ${m.ult}</small>
       ${own ? (b ? `<small class="g3-best">Recorde ${fmt(b)}</small>` : '') : `<span class="g3-lock">✦ ${cost(c)} para liberar</span>`}</button>`; }).join('')}</div>
     <div class="g3-evo-strip"><b>Evolução do mago:</b>${TIERS.map((t, i) => `<span><img src="${portrait(sel.c, i)}" alt="" width="56" height="56"><small>${t[1]}<br>nível ${t[0]}</small></span>`).join('<i>→</i>')}</div>
+    <div class="g3-tabs">${[['ach','Conquistas e visuais'],['best','Bestiário'],['rank','Ranking']].map(([k, l]) => `<button class="chip" data-g3t="${k}" aria-pressed="${sel.tab === k}">${l}</button>`).join('')}</div>
+    <div class="g3-tabbox">${sel.tab === 'best' ? bestHTML() : sel.tab === 'rank' ? rankHTML() : achHTML()}</div>
     <details class="g3-help"><summary>Como jogar e grimório de evoluções</summary>
       <ul><li><b>Mover:</b> no PC, W A S D ou setas; no celular, arraste o dedo em qualquer lugar (um joystick aparece onde você tocar).</li>
       <li><b>Esquiva:</b> Espaço ou o botão » (fica invencível por um instante).</li><li><b>Poder especial:</b> carrega derrotando criaturas; E ou o botão dourado.</li>
@@ -811,6 +880,9 @@ function menu(box){
     sel.c = c; menu(box); });
   $('#g3Go').onclick = () => start({c:sel.c}); $('#g3Shop').onclick = () => { sel.view = 'shop'; menu(box); };
   $('#g3Hard').onchange = e => { V.hard = e.target.checked; save(); };
+  $$('[data-g3t]').forEach(b => b.onclick = () => { sel.tab = b.dataset.g3t; menu(box); });
+  $$('[data-g3cos]').forEach(b => b.onclick = () => { V.cos = V.cos || {}; V.cos[sel.c] = b.dataset.g3cos; save(); menu(box); });
+  $$('[data-g3rc]').forEach(b => b.onclick = () => { sel.rc = b.dataset.g3rc; menu(box); });
 }
 function confirmBuy(b, c){ if (b.dataset.sure){ return true; } b.dataset.sure = 1; const l = b.querySelector('.g3-lock'); if (l) l.textContent = `Toque de novo para liberar (✦ ${c})`; return false; }
 function shopView(box){
